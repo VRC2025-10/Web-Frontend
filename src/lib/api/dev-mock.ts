@@ -84,8 +84,148 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderMarkdownInline(value: string): string {
+  let html = escapeHtml(value);
+
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+  html = html.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    '<a href="$2">$1</a>',
+  );
+  html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+  html = html.replace(/(^|[^*])\*([^*]+)\*(?!\*)/g, "$1<em>$2</em>");
+  html = html.replace(/(^|[^_])_([^_]+)_(?!_)/g, "$1<em>$2</em>");
+
+  return html;
+}
+
+function wrapList(items: string[], ordered: boolean): string {
+  const tag = ordered ? "ol" : "ul";
+  return `<${tag}>${items.join("")}</${tag}>`;
+}
+
+function renderMarkdownBlock(lines: string[]): string {
+  if (lines.length === 0) {
+    return "";
+  }
+
+  return `<p>${lines.map(renderMarkdownInline).join("<br />")}</p>`;
+}
+
 function htmlFromText(text: string): string {
-  return `<p>${text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br />")}</p>`;
+  if (text.trim().length === 0) {
+    return "";
+  }
+
+  const blocks: string[] = [];
+  const paragraphLines: string[] = [];
+  let unorderedItems: string[] = [];
+  let orderedItems: string[] = [];
+  let inCodeBlock = false;
+  let codeLines: string[] = [];
+
+  const flushParagraph = () => {
+    const block = renderMarkdownBlock(paragraphLines);
+    if (block) {
+      blocks.push(block);
+    }
+    paragraphLines.length = 0;
+  };
+
+  const flushLists = () => {
+    if (unorderedItems.length > 0) {
+      blocks.push(wrapList(unorderedItems, false));
+      unorderedItems = [];
+    }
+    if (orderedItems.length > 0) {
+      blocks.push(wrapList(orderedItems, true));
+      orderedItems = [];
+    }
+  };
+
+  for (const line of text.split(/\r?\n/)) {
+    if (line.trim().startsWith("```")) {
+      flushParagraph();
+      flushLists();
+      if (inCodeBlock) {
+        blocks.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+        codeLines = [];
+      }
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+
+    if (inCodeBlock) {
+      codeLines.push(line);
+      continue;
+    }
+
+    if (line.trim() === "") {
+      flushParagraph();
+      flushLists();
+      continue;
+    }
+
+    const headingMatch = /^(#{1,6})\s+(.*)$/.exec(line);
+    if (headingMatch) {
+      flushParagraph();
+      flushLists();
+      const level = headingMatch[1].length;
+      blocks.push(`<h${level}>${renderMarkdownInline(headingMatch[2])}</h${level}>`);
+      continue;
+    }
+
+    const unorderedMatch = /^[-*+]\s+(.*)$/.exec(line);
+    if (unorderedMatch) {
+      flushParagraph();
+      if (orderedItems.length > 0) {
+        blocks.push(wrapList(orderedItems, true));
+        orderedItems = [];
+      }
+      unorderedItems.push(`<li>${renderMarkdownInline(unorderedMatch[1])}</li>`);
+      continue;
+    }
+
+    const orderedMatch = /^\d+\.\s+(.*)$/.exec(line);
+    if (orderedMatch) {
+      flushParagraph();
+      if (unorderedItems.length > 0) {
+        blocks.push(wrapList(unorderedItems, false));
+        unorderedItems = [];
+      }
+      orderedItems.push(`<li>${renderMarkdownInline(orderedMatch[1])}</li>`);
+      continue;
+    }
+
+    const quoteMatch = /^>\s?(.*)$/.exec(line);
+    if (quoteMatch) {
+      flushParagraph();
+      flushLists();
+      blocks.push(`<blockquote><p>${renderMarkdownInline(quoteMatch[1])}</p></blockquote>`);
+      continue;
+    }
+
+    flushLists();
+    paragraphLines.push(line);
+  }
+
+  if (inCodeBlock) {
+    blocks.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+  }
+
+  flushParagraph();
+  flushLists();
+  return blocks.join("");
 }
 
 let nextSequence = 1000;
@@ -134,7 +274,6 @@ function createInitialState(): MockState {
       status: "active",
       profile: {
         vrc_id: "usr_11111111-1111-1111-1111-111111111111",
-        short_bio: "Community operator and late-night world hopper.",
         x_id: "aki_october",
         bio_markdown: "I handle operations, events, and gallery reviews.",
         bio_html: htmlFromText("I handle operations, events, and gallery reviews."),
@@ -152,7 +291,6 @@ function createInitialState(): MockState {
       status: "active",
       profile: {
         vrc_id: "usr_22222222-2222-2222-2222-222222222222",
-        short_bio: "Builder and lighting enthusiast.",
         x_id: "nao_builds",
         bio_markdown: "I like building calm spaces and event backdrops.",
         bio_html: htmlFromText("I like building calm spaces and event backdrops."),
@@ -170,7 +308,6 @@ function createInitialState(): MockState {
       status: "active",
       profile: {
         vrc_id: null,
-        short_bio: "Event support and moderation.",
         x_id: null,
         bio_markdown: "I help with check-ins, moderation, and follow-up.",
         bio_html: htmlFromText("I help with check-ins, moderation, and follow-up."),
@@ -334,7 +471,6 @@ function buildOwnProfile(profile: MyProfile) {
   return {
     nickname: null,
     vrc_id: profile.vrc_id,
-    short_bio: profile.short_bio ?? null,
     x_id: profile.x_id,
     bio_markdown: profile.bio_markdown,
     bio_html: profile.bio_html,
@@ -495,14 +631,12 @@ function findEventById(eventId: string): PublicEventDetail {
 function applyProfileUpdate(body: Record<string, unknown>) {
   const me = getMockMeRecord();
   const bioMarkdown = String(body.bio_markdown ?? me.profile.bio_markdown ?? "");
-  const shortBio = body.short_bio;
   const xId = body.x_id;
   const vrcId = body.vrc_id;
 
   me.profile = {
     ...me.profile,
     vrc_id: typeof vrcId === "string" ? vrcId : vrcId === null ? null : me.profile.vrc_id,
-    short_bio: typeof shortBio === "string" ? shortBio : shortBio === null ? null : me.profile.short_bio,
     x_id: typeof xId === "string" ? xId.replace(/^@/, "") : xId === null ? null : me.profile.x_id,
     bio_markdown: bioMarkdown,
     bio_html: htmlFromText(bioMarkdown),

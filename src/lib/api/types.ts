@@ -45,7 +45,6 @@ export interface PublicMemberDetail {
 /** Authenticated user's own profile (editable) */
 export interface MyProfile {
   vrc_id: string | null;
-  short_bio?: string | null;
   x_id: string | null;
   bio_markdown: string;
   bio_html: string;

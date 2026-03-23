@@ -17,7 +17,6 @@ export default async function ProfileEditorPage() {
       <ProfileForm
         defaultValues={{
           vrc_id: profile.vrc_id,
-          short_bio: profile.short_bio ?? "",
           x_id: profile.x_id,
           bio_markdown: profile.bio_markdown,
           is_public: profile.is_public,

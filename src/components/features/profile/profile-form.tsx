@@ -60,7 +60,6 @@ function XIcon({ className }: { className?: string }) {
 interface ProfileFormProps {
   defaultValues: {
     vrc_id?: string | null;
-    short_bio?: string | null;
     x_id?: string | null;
     bio_markdown: string;
     is_public: boolean;
@@ -86,7 +85,6 @@ export function ProfileForm({ defaultValues, username }: ProfileFormProps) {
     resolver: zodResolver(ProfileFormSchema) as never,
     defaultValues: {
       vrc_id: defaultValues.vrc_id ?? "",
-      short_bio: defaultValues.short_bio ?? "",
       x_id: defaultValues.x_id ?? "",
       bio_markdown: defaultValues.bio_markdown,
       is_public: defaultValues.is_public,
@@ -192,23 +190,16 @@ export function ProfileForm({ defaultValues, username }: ProfileFormProps) {
           <ShakeOnError hasError={!!errors.vrc_id}>
             <div className="space-y-2">
               <Label htmlFor="vrc_id">VRC ID</Label>
-              <div className="relative">
-                <span
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"
-                  aria-hidden="true"
-                >
-                  usr_
-                </span>
-                <Input
-                  id="vrc_id"
-                  className="rounded-xl pl-12"
-                  aria-invalid={!!errors.vrc_id}
-                  aria-describedby={
-                    errors.vrc_id ? "vrc_id-error" : undefined
-                  }
-                  {...register("vrc_id")}
-                />
-              </div>
+              <Input
+                id="vrc_id"
+                className="rounded-xl"
+                placeholder="usr_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                aria-invalid={!!errors.vrc_id}
+                aria-describedby={
+                  errors.vrc_id ? "vrc_id-error" : undefined
+                }
+                {...register("vrc_id")}
+              />
               <AnimatePresence>
                 {errors.vrc_id && (
                   <motion.p
@@ -227,55 +218,16 @@ export function ProfileForm({ defaultValues, username }: ProfileFormProps) {
             </div>
           </ShakeOnError>
 
-          {/* Short Bio */}
-          <ShakeOnError hasError={!!errors.short_bio}>
-            <div className="space-y-2">
-              <Label htmlFor="short_bio">Short Bio</Label>
-              <Input
-                id="short_bio"
-                className="rounded-xl"
-                placeholder="Nice to meet you!"
-                aria-invalid={!!errors.short_bio}
-                aria-describedby={
-                  errors.short_bio ? "short_bio-error" : undefined
-                }
-                {...register("short_bio")}
-              />
-              <AnimatePresence>
-                {errors.short_bio && (
-                  <motion.p
-                    id="short_bio-error"
-                    role="alert"
-                    className="text-xs text-destructive"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    {errors.short_bio.message}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
-          </ShakeOnError>
-
           {/* Bio (Markdown) */}
           <ShakeOnError hasError={!!errors.bio_markdown}>
             <div className="space-y-2">
-              <Label htmlFor="bio_markdown">
-                Bio <span className="sr-only">(required)</span>
-                <span aria-hidden="true" className="text-destructive">
-                  {" "}
-                  *
-                </span>
-              </Label>
+              <Label htmlFor="bio_markdown">Bio</Label>
               <MarkdownPreview
                 id="bio_markdown"
                 value={bioValue}
                 onChange={(val) => setValue("bio_markdown", val, { shouldValidate: true })}
                 rows={8}
                 placeholder="Write something about yourself… (Markdown supported)"
-                aria-required="true"
                 aria-invalid={!!errors.bio_markdown}
                 aria-describedby={
                   errors.bio_markdown ? "bio_markdown-error" : undefined
