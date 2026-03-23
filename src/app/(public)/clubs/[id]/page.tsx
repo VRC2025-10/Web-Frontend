@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/shared/section-header";
 import { EmptyState } from "@/components/shared/empty-state";
 import { GalleryGrid } from "@/components/features/clubs/gallery-grid";
+import { RichTextContent } from "@/components/shared/rich-text-content";
 import { ArrowLeft, Crown, ImageOff, ImagePlus, Users } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -74,10 +75,7 @@ export default async function ClubDetailPage(props: { params: Promise<{ id: stri
         <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
           <SectionHeader title={t("detail.aboutTitle")} />
           {club.description_html ? (
-            <div
-              className="markdown-content prose prose-sm prose-neutral mt-4 max-w-none dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: club.description_html }}
-            />
+            <RichTextContent html={club.description_html} className="prose-sm mt-4" />
           ) : (
             <p className="mt-4 text-sm text-muted-foreground">{t("detail.noDescription")}</p>
           )}
