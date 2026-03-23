@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { toast } from "sonner";
-import { MoreHorizontal, Eye, FileText, CheckCircle, XCircle, User, Calendar } from "lucide-react";
+import { MoreHorizontal, Eye, FileText, CheckCircle, XCircle, User } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,6 @@ const statusColor: Record<string, string> = {
 
 const targetIcon: Record<string, typeof User> = {
   profile: User,
-  event: Calendar,
 };
 
 interface ReportActionsTableProps {
@@ -90,9 +89,7 @@ export function ReportActionsTable({ reports }: ReportActionsTableProps) {
   }
 
   function getTargetLink(report: AdminReport) {
-    return report.target_type === "profile"
-      ? `/members/${report.target_id}`
-      : `/events/${report.target_id}`;
+    return `/members/${report.target_id}`;
   }
 
   return (
