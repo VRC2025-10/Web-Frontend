@@ -1,7 +1,9 @@
 import { getAdminTags } from "@/lib/api/admin";
+import { requireMe } from "@/lib/api/auth";
 import { TagManagementClient } from "@/components/features/admin/tag-management-client";
 import type { Tag } from "@/lib/api/types";
 import type { Metadata } from "next";
+import { forbidden } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Tag Management | Admin",
@@ -9,6 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminTagsPage() {
+  const me = await requireMe();
+  if (!me.admin_permissions.manage_tags) {
+    forbidden();
+  }
+
   let tags: Tag[];
   try {
     tags = await getAdminTags();
