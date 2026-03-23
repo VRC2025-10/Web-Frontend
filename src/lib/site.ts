@@ -1,0 +1,1 @@
+export const SITE_NAME = "VRC 10月同期会";
