@@ -20,6 +20,12 @@ import type {
   UserRole,
   UserStatus,
 } from "./types";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import rehypeStringify from "rehype-stringify";
+import remarkGfm from "remark-gfm";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import { unified } from "unified";
 
 export interface MockApiErrorLike {
   status: number;
@@ -84,148 +90,47 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+const DEV_MOCK_MARKDOWN_SCHEMA = {
+  ...defaultSchema,
+  tagNames: [
+    ...(defaultSchema.tagNames ?? []),
+    "img",
+    "table",
+    "thead",
+    "tbody",
+    "tr",
+    "th",
+    "td",
+    "del",
+    "hr",
+  ],
+  attributes: {
+    ...(defaultSchema.attributes ?? {}),
+    a: [...(defaultSchema.attributes?.a ?? []), "href"],
+    img: ["src", "alt"],
+    th: ["align"],
+    td: ["align"],
+  },
+  protocols: {
+    ...(defaultSchema.protocols ?? {}),
+    href: ["https"],
+    src: ["https"],
+  },
+};
 
-function renderMarkdownInline(value: string): string {
-  let html = escapeHtml(value);
-
-  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-  html = html.replace(
-    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
-    '<a href="$2">$1</a>',
-  );
-  html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  html = html.replace(/__([^_]+)__/g, "<strong>$1</strong>");
-  html = html.replace(/(^|[^*])\*([^*]+)\*(?!\*)/g, "$1<em>$2</em>");
-  html = html.replace(/(^|[^_])_([^_]+)_(?!_)/g, "$1<em>$2</em>");
-
-  return html;
-}
-
-function wrapList(items: string[], ordered: boolean): string {
-  const tag = ordered ? "ol" : "ul";
-  return `<${tag}>${items.join("")}</${tag}>`;
-}
-
-function renderMarkdownBlock(lines: string[]): string {
-  if (lines.length === 0) {
-    return "";
-  }
-
-  return `<p>${lines.map(renderMarkdownInline).join("<br />")}</p>`;
-}
+const markdownProcessor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkRehype)
+  .use(rehypeSanitize, DEV_MOCK_MARKDOWN_SCHEMA)
+  .use(rehypeStringify);
 
 function htmlFromText(text: string): string {
   if (text.trim().length === 0) {
     return "";
   }
 
-  const blocks: string[] = [];
-  const paragraphLines: string[] = [];
-  let unorderedItems: string[] = [];
-  let orderedItems: string[] = [];
-  let inCodeBlock = false;
-  let codeLines: string[] = [];
-
-  const flushParagraph = () => {
-    const block = renderMarkdownBlock(paragraphLines);
-    if (block) {
-      blocks.push(block);
-    }
-    paragraphLines.length = 0;
-  };
-
-  const flushLists = () => {
-    if (unorderedItems.length > 0) {
-      blocks.push(wrapList(unorderedItems, false));
-      unorderedItems = [];
-    }
-    if (orderedItems.length > 0) {
-      blocks.push(wrapList(orderedItems, true));
-      orderedItems = [];
-    }
-  };
-
-  for (const line of text.split(/\r?\n/)) {
-    if (line.trim().startsWith("```")) {
-      flushParagraph();
-      flushLists();
-      if (inCodeBlock) {
-        blocks.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
-        codeLines = [];
-      }
-      inCodeBlock = !inCodeBlock;
-      continue;
-    }
-
-    if (inCodeBlock) {
-      codeLines.push(line);
-      continue;
-    }
-
-    if (line.trim() === "") {
-      flushParagraph();
-      flushLists();
-      continue;
-    }
-
-    const headingMatch = /^(#{1,6})\s+(.*)$/.exec(line);
-    if (headingMatch) {
-      flushParagraph();
-      flushLists();
-      const level = headingMatch[1].length;
-      blocks.push(`<h${level}>${renderMarkdownInline(headingMatch[2])}</h${level}>`);
-      continue;
-    }
-
-    const unorderedMatch = /^[-*+]\s+(.*)$/.exec(line);
-    if (unorderedMatch) {
-      flushParagraph();
-      if (orderedItems.length > 0) {
-        blocks.push(wrapList(orderedItems, true));
-        orderedItems = [];
-      }
-      unorderedItems.push(`<li>${renderMarkdownInline(unorderedMatch[1])}</li>`);
-      continue;
-    }
-
-    const orderedMatch = /^\d+\.\s+(.*)$/.exec(line);
-    if (orderedMatch) {
-      flushParagraph();
-      if (unorderedItems.length > 0) {
-        blocks.push(wrapList(unorderedItems, false));
-        unorderedItems = [];
-      }
-      orderedItems.push(`<li>${renderMarkdownInline(orderedMatch[1])}</li>`);
-      continue;
-    }
-
-    const quoteMatch = /^>\s?(.*)$/.exec(line);
-    if (quoteMatch) {
-      flushParagraph();
-      flushLists();
-      blocks.push(`<blockquote><p>${renderMarkdownInline(quoteMatch[1])}</p></blockquote>`);
-      continue;
-    }
-
-    flushLists();
-    paragraphLines.push(line);
-  }
-
-  if (inCodeBlock) {
-    blocks.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
-  }
-
-  flushParagraph();
-  flushLists();
-  return blocks.join("");
+  return String(markdownProcessor.processSync(text));
 }
 
 let nextSequence = 1000;

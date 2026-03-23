@@ -5,11 +5,11 @@ import { SITE_NAME } from "@/lib/site";
 
 interface HeroContentProps {
   subtitle: string;
-  ctaEventsLabel: string;
+  ctaClubsLabel: string;
   ctaMembersLabel: string;
 }
 
-export function HeroContent({ subtitle, ctaEventsLabel, ctaMembersLabel }: HeroContentProps) {
+export function HeroContent({ subtitle, ctaClubsLabel, ctaMembersLabel }: HeroContentProps) {
   return (
     <div className="absolute inset-x-0 bottom-0 z-20 mx-auto w-full max-w-7xl px-4 pb-6 sm:px-6 lg:px-8 md:pb-10">
       <div className="bg-background/60 backdrop-blur-md rounded-2xl p-4 md:p-8 inline-block max-w-xl">
@@ -25,7 +25,7 @@ export function HeroContent({ subtitle, ctaEventsLabel, ctaMembersLabel }: HeroC
       <div className="hero-fade-up mt-4 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "160ms" }}>
         <div className="hero-fade-up" style={{ animationDelay: "220ms" }}>
           <Button asChild className="w-full sm:w-auto rounded-2xl px-6 py-3 text-base h-auto">
-            <Link href="/events">{ctaEventsLabel}</Link>
+            <Link href="/clubs">{ctaClubsLabel}</Link>
           </Button>
         </div>
         <div className="hero-fade-up" style={{ animationDelay: "260ms" }}>
