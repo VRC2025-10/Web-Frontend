@@ -9,17 +9,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     requireMe(),
     getTranslations("admin"),
   ]);
-  if (!["staff", "admin", "super_admin"].includes(me.role)) {
+  if (!me.admin_access) {
     forbidden();
   }
 
-  const roleLabel = me.role.replace(/_/g, " ");
+  const roleLabel = tAdmin(`roleNames.${me.role}`);
 
   return (
     <div className="flex min-h-screen bg-background">
-      <AdminSidebar userRole={me.role} />
+      <AdminSidebar permissions={me.admin_permissions} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <AdminHeader userRole={me.role} roleLabel={roleLabel} backToSiteLabel={tAdmin("backToSite")} />
+        <AdminHeader permissions={me.admin_permissions} roleLabel={roleLabel} backToSiteLabel={tAdmin("backToSite")} />
         <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">{children}</main>
       </div>
     </div>
