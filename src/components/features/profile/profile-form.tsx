@@ -91,8 +91,10 @@ export function ProfileForm({ defaultValues, username }: ProfileFormProps) {
     },
   });
 
-  const bioValue = watch("bio_markdown");
-  const isPublic = watch("is_public");
+  const bioValue = watch("bio_markdown", defaultValues.bio_markdown);
+  const vrcIdValue = watch("vrc_id", defaultValues.vrc_id ?? "");
+  const xIdValue = watch("x_id", defaultValues.x_id ?? "");
+  const isPublic = watch("is_public", defaultValues.is_public);
 
   async function onSubmit(data: FormInput) {
     setServerError(null);
@@ -194,11 +196,21 @@ export function ProfileForm({ defaultValues, username }: ProfileFormProps) {
                 id="vrc_id"
                 className="rounded-xl"
                 placeholder="usr_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                value={vrcIdValue ?? ""}
+                onChange={(event) =>
+                  setValue("vrc_id", event.target.value, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true,
+                  })
+                }
                 aria-invalid={!!errors.vrc_id}
                 aria-describedby={
                   errors.vrc_id ? "vrc_id-error" : undefined
                 }
-                {...register("vrc_id")}
+                name="vrc_id"
+                ref={register("vrc_id").ref}
+                onBlur={register("vrc_id").onBlur}
               />
               <AnimatePresence>
                 {errors.vrc_id && (
@@ -282,9 +294,19 @@ export function ProfileForm({ defaultValues, username }: ProfileFormProps) {
                   id="x_id"
                   className="rounded-xl pl-10"
                   placeholder="@username"
+                  value={xIdValue ?? ""}
+                  onChange={(event) =>
+                    setValue("x_id", event.target.value, {
+                      shouldDirty: true,
+                      shouldTouch: true,
+                      shouldValidate: true,
+                    })
+                  }
                   aria-invalid={!!errors.x_id}
                   aria-describedby={errors.x_id ? "x_id-error" : undefined}
-                  {...register("x_id")}
+                  name="x_id"
+                  ref={register("x_id").ref}
+                  onBlur={register("x_id").onBlur}
                 />
               </div>
               <AnimatePresence>
