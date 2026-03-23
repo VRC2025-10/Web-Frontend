@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
   Building2,
-  Calendar,
   Flag,
   ImageIcon,
   LayoutDashboard,
@@ -14,31 +14,28 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import type { AdminPermissionSet } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 export interface AdminNavItem {
   href: string;
-  label: string;
+  labelKey: string;
   icon: LucideIcon;
-  staffVisible: boolean;
+  isVisible: (permissions: AdminPermissionSet) => boolean;
 }
 
 export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, staffVisible: true },
-  { href: "/admin/users", label: "Users", icon: Users, staffVisible: false },
-  { href: "/admin/galleries", label: "Galleries", icon: ImageIcon, staffVisible: true },
-  { href: "/admin/events", label: "Events", icon: Calendar, staffVisible: false },
-  { href: "/admin/tags", label: "Tags", icon: Tag, staffVisible: false },
-  { href: "/admin/reports", label: "Reports", icon: Flag, staffVisible: false },
-  { href: "/admin/clubs", label: "Clubs", icon: Building2, staffVisible: false },
+  { href: "/admin", labelKey: "dashboard", icon: LayoutDashboard, isVisible: (permissions) => permissions.view_dashboard },
+  { href: "/admin/users", labelKey: "users", icon: Users, isVisible: (permissions) => permissions.manage_users },
+  { href: "/admin/roles", labelKey: "roles", icon: Shield, isVisible: (permissions) => permissions.manage_roles },
+  { href: "/admin/galleries", labelKey: "galleries", icon: ImageIcon, isVisible: (permissions) => permissions.manage_galleries },
+  { href: "/admin/tags", labelKey: "tags", icon: Tag, isVisible: (permissions) => permissions.manage_tags },
+  { href: "/admin/reports", labelKey: "reports", icon: Flag, isVisible: (permissions) => permissions.manage_reports },
+  { href: "/admin/clubs", labelKey: "clubs", icon: Building2, isVisible: (permissions) => permissions.manage_clubs },
 ];
 
-export function getVisibleAdminItems(role: string): AdminNavItem[] {
-  if (role === "admin" || role === "super_admin") {
-    return ADMIN_NAV_ITEMS;
-  }
-
-  return ADMIN_NAV_ITEMS.filter((item) => item.staffVisible);
+export function getVisibleAdminItems(permissions: AdminPermissionSet): AdminNavItem[] {
+  return ADMIN_NAV_ITEMS.filter((item) => item.isVisible(permissions));
 }
 
 export function getAdminSectionLabel(pathname: string): string {
@@ -46,19 +43,20 @@ export function getAdminSectionLabel(pathname: string): string {
     .sort((left, right) => right.href.length - left.href.length)
     .find((item) => (item.href === "/admin" ? pathname === item.href : pathname.startsWith(item.href)));
 
-  return match?.label ?? "Admin";
+  return match?.labelKey ?? "title";
 }
 
 export function AdminNavPanel({
-  userRole,
+  permissions,
   pathname,
   className,
 }: {
-  userRole: string;
+  permissions: AdminPermissionSet;
   pathname: string;
   className?: string;
 }) {
-  const items = getVisibleAdminItems(userRole);
+  const t = useTranslations("admin.nav");
+  const items = getVisibleAdminItems(permissions);
 
   return (
     <div className={cn("flex h-full flex-col", className)}>
@@ -70,12 +68,12 @@ export function AdminNavPanel({
           <Shield className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-sm font-semibold">Admin</p>
-          <p className="text-xs text-muted-foreground">Control panel</p>
+          <p className="text-sm font-semibold">{t("title")}</p>
+          <p className="text-xs text-muted-foreground">{t("subtitle")}</p>
         </div>
       </Link>
 
-      <nav aria-label="Admin navigation" className="flex flex-col gap-1">
+      <nav aria-label={t("ariaLabel")} className="flex flex-col gap-1">
         {items.map((item) => {
           const Icon = item.icon;
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
@@ -92,7 +90,7 @@ export function AdminNavPanel({
               )}
             >
               <Icon className="h-4 w-4" />
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           );
         })}
@@ -104,7 +102,7 @@ export function AdminNavPanel({
           className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground/70 transition-colors hover:bg-accent/10 hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to site
+          {t("backToSite")}
         </Link>
       </div>
     </div>

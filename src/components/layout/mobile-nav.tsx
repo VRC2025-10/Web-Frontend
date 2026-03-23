@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
   Sun,
   Moon,
   Home,
-  Calendar,
+  CalendarDays,
   Users,
   Building2,
   LogOut,
@@ -29,22 +30,18 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { logoutAction } from "@/actions/auth";
 import type { AuthMe } from "@/lib/api/types";
+import { formatUserRoleLabel } from "@/lib/role-labels";
 import { SITE_NAME } from "@/lib/site";
 
 interface MobileNavProps {
   user: AuthMe | null;
 }
 
-const navLinks = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/events", label: "Events", icon: Calendar },
-  { href: "/members", label: "Members", icon: Users },
-  { href: "/clubs", label: "Clubs", icon: Building2 },
+const baseNavLinks = [
+  { href: "/", labelKey: "home", icon: Home },
+  { href: "/members", labelKey: "members", icon: Users },
+  { href: "/clubs", labelKey: "clubs", icon: Building2 },
 ] as const;
-
-function isAdminRole(role: string) {
-  return role === "staff" || role === "admin" || role === "super_admin";
-}
 
 function getProfileHref(user: AuthMe) {
   return user.profile?.is_public ? `/members/${user.discord_id}` : "/settings/profile";
@@ -52,7 +49,13 @@ function getProfileHref(user: AuthMe) {
 
 export function MobileNav({ user }: MobileNavProps) {
   const pathname = usePathname();
+  const locale = useLocale();
+  const tNav = useTranslations("nav");
+  const tTheme = useTranslations("theme");
   const { setTheme, resolvedTheme } = useTheme();
+  const navLinks = user?.schedule_access
+    ? [...baseNavLinks, { href: "/schedule", labelKey: "schedule", icon: CalendarDays }]
+    : baseNavLinks;
 
   function toggleTheme() {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
@@ -89,7 +92,7 @@ export function MobileNav({ user }: MobileNavProps) {
       aria-describedby={undefined}
     >
       <SheetHeader className="px-2">
-        <SheetTitle className="sr-only">Mobile navigation menu</SheetTitle>
+        <SheetTitle className="sr-only">{tNav("mobileMenu")}</SheetTitle>
         <SheetClose asChild>
           <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.png" alt="" width={28} height={28} className="rounded-md" aria-hidden="true" />
@@ -116,7 +119,7 @@ export function MobileNav({ user }: MobileNavProps) {
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {link.label}
+                {tNav(link.labelKey)}
               </Link>
             </SheetClose>
           );
@@ -128,12 +131,12 @@ export function MobileNav({ user }: MobileNavProps) {
       {/* Toggles */}
       <div className="flex flex-col gap-2 px-1">
         <div className="flex items-center justify-between px-3 py-2.5 rounded-xl">
-          <span className="text-sm font-medium">Theme</span>
+          <span className="text-sm font-medium">{tTheme("label")}</span>
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            aria-label="Toggle theme"
+            aria-label={resolvedTheme === "dark" ? tTheme("light") : tTheme("dark")}
           >
             {resolvedTheme === "dark" ? (
               <Sun className="h-4 w-4" />
@@ -143,12 +146,12 @@ export function MobileNav({ user }: MobileNavProps) {
           </Button>
         </div>
         <div className="flex items-center justify-between px-3 py-2.5 rounded-xl">
-          <span className="text-sm font-medium">Language</span>
+          <span className="text-sm font-medium">{tNav("language")}</span>
           <Button
             variant="ghost"
             size="sm"
             onClick={toggleLocale}
-            aria-label="Toggle language"
+            aria-label={locale === "en" ? "Switch language" : "言語を切り替え"}
             className="text-xs font-bold"
           >
             {currentLocale()}
@@ -174,7 +177,7 @@ export function MobileNav({ user }: MobileNavProps) {
               </Avatar>
               <div>
                 <p className="font-medium text-sm">{user.discord_username}</p>
-                <p className="text-xs text-muted-foreground">{user.role}</p>
+                <p className="text-xs text-muted-foreground">{formatUserRoleLabel(user.role, locale)}</p>
               </div>
             </div>
             <div className="flex flex-col gap-1 mt-2">
@@ -184,7 +187,7 @@ export function MobileNav({ user }: MobileNavProps) {
                   className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-foreground/70 hover:bg-accent/10"
                 >
                   <User className="h-4 w-4" />
-                  Profile
+                  {tNav("profile")}
                 </Link>
               </SheetClose>
               <SheetClose asChild>
@@ -193,17 +196,28 @@ export function MobileNav({ user }: MobileNavProps) {
                   className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-foreground/70 hover:bg-accent/10"
                 >
                   <Settings className="h-4 w-4" />
-                  Settings
+                  {tNav("settings")}
                 </Link>
               </SheetClose>
-              {isAdminRole(user.role) && (
+              {user.schedule_access && (
+                <SheetClose asChild>
+                  <Link
+                    href="/schedule"
+                    className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-foreground/70 hover:bg-accent/10"
+                  >
+                    <CalendarDays className="h-4 w-4" />
+                    {tNav("schedule")}
+                  </Link>
+                </SheetClose>
+              )}
+              {user.admin_access && (
                 <SheetClose asChild>
                   <Link
                     href="/admin"
                     className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-foreground/70 hover:bg-accent/10"
                   >
                     <Shield className="h-4 w-4" />
-                    Admin
+                    {tNav("admin")}
                   </Link>
                 </SheetClose>
               )}
@@ -213,7 +227,7 @@ export function MobileNav({ user }: MobileNavProps) {
                   className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-destructive hover:bg-accent/10"
                 >
                   <LogOut className="h-4 w-4" />
-                  Log out
+                  {tNav("logout")}
                 </button>
               </form>
             </div>
@@ -221,7 +235,7 @@ export function MobileNav({ user }: MobileNavProps) {
         ) : (
           <SheetClose asChild>
             <Button variant="outline" size="sm" className="w-full" asChild>
-              <Link href="/login">Log in</Link>
+              <Link href="/login">{tNav("login")}</Link>
             </Button>
           </SheetClose>
         )}

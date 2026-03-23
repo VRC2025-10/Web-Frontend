@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import type { AuthMe } from "@/lib/api/types";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/events", label: "Events" },
-  { href: "/members", label: "Members" },
-  { href: "/clubs", label: "Clubs" },
+const baseNavLinks = [
+  { href: "/", labelKey: "home" },
+  { href: "/members", labelKey: "members" },
+  { href: "/clubs", labelKey: "clubs" },
 ] as const;
 
 function isActive(pathname: string, href: string) {
@@ -16,8 +17,16 @@ function isActive(pathname: string, href: string) {
   return pathname.startsWith(href);
 }
 
-export function HeaderNav() {
+interface HeaderNavProps {
+  user: AuthMe | null;
+}
+
+export function HeaderNav({ user }: HeaderNavProps) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
+  const navLinks = user?.schedule_access
+    ? [...baseNavLinks, { href: "/schedule", labelKey: "schedule" }]
+    : baseNavLinks;
 
   return (
     <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-1">
@@ -31,7 +40,7 @@ export function HeaderNav() {
             isActive(pathname, link.href) && "bg-primary/10 text-primary"
           )}
         >
-          {link.label}
+          {t(link.labelKey)}
         </Link>
       ))}
     </nav>
