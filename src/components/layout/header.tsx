@@ -16,7 +16,11 @@ interface HeaderProps {
 }
 
 export async function Header({ user }: HeaderProps) {
-  const tFooter = await getTranslations("footer");
+  const [tCommon, tFooter, tNav] = await Promise.all([
+    getTranslations("common"),
+    getTranslations("footer"),
+    getTranslations("nav"),
+  ]);
 
   return (
     <>
@@ -24,7 +28,7 @@ export async function Header({ user }: HeaderProps) {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-background focus:px-4 focus:py-2 focus:rounded-xl"
       >
-        Skip to main content
+        {tCommon("skipToContent")}
       </a>
       <HeaderFrame>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-full">
@@ -33,7 +37,7 @@ export async function Header({ user }: HeaderProps) {
             <span className="font-heading font-bold text-xl hidden sm:inline">{SITE_NAME}</span>
           </Link>
 
-          <HeaderNav />
+          <HeaderNav user={user} />
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -43,7 +47,7 @@ export async function Header({ user }: HeaderProps) {
             <div className="hidden lg:block">
               {user ? <UserMenu user={user} /> : (
                 <Button variant="outline" size="sm" asChild>
-                  <Link href="/login">Login</Link>
+                  <Link href="/login">{tNav("login")}</Link>
                 </Button>
               )}
             </div>
