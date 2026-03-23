@@ -1,0 +1,541 @@
+{
+  "common": {
+    "siteTitle": "VRC 10月同期会",
+    "loading": "Loading…",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "back": "Back",
+    "backToHome": "Back to Home",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "close": "Close",
+    "search": "Search",
+    "viewAll": "View all →",
+    "noResults": "No results",
+    "skipToContent": "Skip to main content"
+  },
+  "nav": {
+    "home": "Home",
+    "events": "Events",
+    "members": "Members",
+    "clubs": "Clubs",
+    "admin": "Admin",
+    "settings": "Settings",
+    "profile": "Profile",
+    "login": "Login",
+    "logout": "Logout",
+    "mobileMenu": "Menu"
+  },
+  "theme": {
+    "light": "Light mode",
+    "dark": "Dark mode",
+    "system": "System"
+  },
+  "errorPreview": {
+    "eyebrow": "Preview Lab",
+    "title": "Error page preview routes",
+    "description": "Use this page to preview the major HTTP error states with their real UI. The 401, 403, 404, and 500 previews intentionally trigger the matching Next.js control flow. The 429 and 503 previews open their dedicated pages directly.",
+    "note": "This route is intentionally not linked from the main navigation. Open it directly whenever you need to verify the error UI.",
+    "open": "Open",
+    "items": {
+      "unauthorized": {
+        "code": "401",
+        "title": "Unauthorized",
+        "description": "Preview the unauthenticated state."
+      },
+      "forbidden": {
+        "code": "403",
+        "title": "Forbidden",
+        "description": "Preview the insufficient permissions state."
+      },
+      "notFound": {
+        "code": "404",
+        "title": "Not Found",
+        "description": "Preview the missing page state."
+      },
+      "rateLimit": {
+        "code": "429",
+        "title": "Too Many Requests",
+        "description": "Open the rate limit page directly."
+      },
+      "serverError": {
+        "code": "500",
+        "title": "Runtime Error",
+        "description": "Throw an intentional route error and render the generic error UI."
+      },
+      "serviceUnavailable": {
+        "code": "503",
+        "title": "Service Unavailable",
+        "description": "Open the temporary outage page directly."
+      }
+    }
+  },
+  "home": {
+    "meta": {
+      "description": "Community website for VRC 10月同期会"
+    },
+    "hero": {
+      "title": "VRC 10月同期会",
+      "subtitle": "A community for VRC 10月同期会 members",
+      "cta": {
+        "events": "View Events",
+        "members": "Meet Members"
+      }
+    },
+    "events": {
+      "title": "Upcoming Events",
+      "viewAll": "View all →",
+      "empty": "No upcoming events"
+    },
+    "members": {
+      "title": "Recent Members",
+      "viewAll": "View all →",
+      "empty": "No members yet"
+    }
+  },
+  "events": {
+    "title": "Events",
+    "meta": {
+      "title": "Events",
+      "description": "Events of VRC 10月同期会"
+    },
+    "filters": {
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "all": "All"
+    },
+    "sort": {
+      "dateDesc": "Newest first",
+      "dateAsc": "Oldest first"
+    },
+    "empty": "No events found",
+    "resetFilters": "Reset filters",
+    "host": "Hosted by",
+    "location": "Location",
+    "detail": {
+      "backButton": "Back to events",
+      "schedule": "Schedule",
+      "joinEvent": "Join Event",
+      "ongoing": "Ongoing",
+      "ended": "Ended",
+      "report": "Report",
+      "join": {
+        "upcoming": "Event hasn't started yet",
+        "vrchat": "Join in VRChat",
+        "discord": "Join Discord Voice",
+        "ended": "This event has ended"
+      }
+    }
+  },
+  "members": {
+    "title": "Members",
+    "meta": {
+      "title": "Members",
+      "description": "Members of VRC 10月同期会"
+    },
+    "search": {
+      "placeholder": "Search members…",
+      "searching": "Searching…",
+      "resultsCount": "{count} members found",
+      "noResults": "No members found"
+    },
+    "empty": "No members yet",
+    "detail": {
+      "about": "About",
+      "editProfile": "Edit Profile",
+      "privateProfile": "This profile is private",
+      "report": "Report",
+      "backButton": "Back to members",
+      "noBio": "This member hasn't written a bio yet."
+    }
+  },
+  "clubs": {
+    "title": "Clubs",
+    "meta": {
+      "title": "Clubs",
+      "description": "Clubs of VRC 10月同期会"
+    },
+    "empty": "No clubs yet",
+    "backToList": "Back to clubs",
+    "detail": {
+      "aboutTitle": "About This Club",
+      "owner": "Owner",
+      "unknownOwner": "Not assigned",
+      "members": "{count} members",
+      "noMembers": "No member roster yet",
+      "noDescription": "This club does not have a description yet"
+    },
+    "gallery": {
+      "title": "Gallery",
+      "empty": "No photos yet",
+      "addPhotos": "Add photos"
+    }
+  },
+  "profile": {
+    "title": "Edit Profile",
+    "meta": {
+      "description": "Edit your profile"
+    },
+    "fields": {
+      "name": "Display Name",
+      "nameHelp": "Synced from Discord",
+      "vrcId": "VRChat ID",
+      "xId": "X (Twitter)",
+      "bio": "Bio",
+      "bioPreview": "Preview",
+      "bioEdit": "Edit",
+      "isPublic": "Make profile public",
+      "isPublicHelp": "When off, your profile won't appear in the members list"
+    },
+    "saved": "Profile saved successfully",
+    "saveError": "Failed to save profile"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Sign in with your Discord account",
+      "button": "Login with Discord",
+      "footnote": "This site is for VRC 10月同期会 Discord members only"
+    },
+    "errors": {
+      "auth_failed": "Authentication failed. Please try again.",
+      "csrf_failed": "Session invalid. Please reload the page.",
+      "not_guild_member": "This site is only available to VRC 10月同期会 Discord server members.",
+      "discord_error": "An error occurred during Discord authentication."
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "dashboard": {
+      "title": "Dashboard",
+      "totalUsers": "Total Members",
+      "totalEvents": "Total Events",
+      "totalClubs": "Total Clubs",
+      "pendingReports": "Pending Reports",
+      "eyebrow": "Admin",
+      "heroTitle": "Review the main operational metrics in one place.",
+      "heroDescription": "This page summarizes the main counts and links to the admin areas you use most. If there are pending reports, review them first.",
+      "ctaReports": "Review reports",
+      "ctaGallery": "Manage galleries",
+      "pulseTitle": "Priority",
+      "pulsePrimaryLabel": "Immediate focus",
+      "pulsePrimaryAlert": "There are {count} pending reports. Review their status before moving on to other work.",
+      "pulsePrimaryCalm": "There are no pending reports. You can continue with other maintenance tasks.",
+      "pulseSecondaryLabel": "Events",
+      "pulseSecondaryText": "There are {count} events. Open event management to review dates and publication status.",
+      "pulseTertiaryLabel": "Clubs",
+      "pulseTertiaryText": "There are {count} clubs. Update club details and photos from club management and galleries.",
+      "hints": {
+        "totalUsers": "Registered member accounts",
+        "totalEvents": "Events currently managed",
+        "totalClubs": "Published clubs",
+        "pendingReportsActive": "Needs attention first",
+        "pendingReportsClear": "No urgent moderation"
+      },
+      "actionsTitle": "Shortcuts",
+      "actionsDescription": "Open the admin screens you use most often.",
+      "actions": {
+        "membersTitle": "Manage members",
+        "membersDescription": "Review roles, account status, and profile access.",
+        "eventsTitle": "Manage events",
+        "eventsDescription": "Update schedules, descriptions, and publication status.",
+        "galleryTitle": "Manage galleries",
+        "galleryDescription": "Organize community-wide and club-specific photos.",
+        "reportsTitle": "Manage reports",
+        "reportsDescription": "Review and resolve pending reports."
+      },
+      "moodboardTitle": "Checks",
+      "moodboardFirstLabel": "Members",
+      "moodboardFirstText": "There are {count} registered members. Keep that scale in mind before changing public-facing pages.",
+      "moodboardSecondLabel": "Events and photos",
+      "moodboardSecondText": "Verify dates, publication status, and gallery scope before updating content.",
+      "moodboardThirdLabel": "Reports",
+      "moodboardThirdText": "There are {count} pending reports. Treat them as the highest priority when the count is not zero."
+    },
+    "users": {
+      "title": "User Management",
+      "filterRole": "Role",
+      "filterSearch": "Search by name…",
+      "allRoles": "All roles",
+      "columns": {
+        "user": "User",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewProfile": "View Profile",
+        "changeRole": "Change Role",
+        "suspend": "Suspend",
+        "activate": "Activate"
+      },
+      "dialog": {
+        "changeRoleTitle": "Change Role",
+        "changeRoleDesc": "Select a new role for this user.",
+        "suspendTitle": "Suspend User",
+        "suspendDesc": "Are you sure? This user will lose access.",
+        "activateTitle": "Activate User",
+        "activateDesc": "This will restore the user's access."
+      },
+      "empty": "No users found",
+      "roleChanged": "Role updated successfully",
+      "statusChanged": "User status updated"
+    },
+    "events": {
+      "title": "Event Management",
+      "create": "Create Event",
+      "columns": {
+        "title": "Title",
+        "date": "Date",
+        "status": "Status",
+        "tags": "Tags",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "dialog": {
+        "createTitle": "Create Event",
+        "editTitle": "Edit Event",
+        "deleteTitle": "Delete Event",
+        "deleteDesc": "Are you sure? This action cannot be undone."
+      },
+      "form": {
+        "title": "Title",
+        "description": "Description",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "location": "Location",
+        "status": "Status"
+      },
+      "empty": "No events created yet",
+      "created": "Event created successfully",
+      "updated": "Event updated successfully",
+      "deleted": "Event deleted successfully"
+    },
+    "galleries": {
+      "title": "Gallery Management",
+      "description": "Manage whether each photo belongs to the whole community or to a specific club.",
+      "uploadTitle": "Upload Photo",
+      "uploadHelp": "Choose whether the photos belong to the whole community or to a specific club, then upload them from your device.",
+      "uploadButton": "Upload Photo",
+      "uploadConstraints": "Upload up to {maxFiles} files per batch, {maxSizeMB}MB each, and {totalSizeMB}MB total.",
+      "targetCommunity": "Whole community",
+      "targetClub": "Specific club",
+      "selectClub": "Select a club",
+      "clubOptional": "Not required",
+      "columns": {
+        "thumbnail": "Thumbnail",
+        "target": "Target",
+        "uploader": "Uploader",
+        "club": "Club",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "labels": {
+        "target": "Target",
+        "club": "Club",
+        "imageUrl": "Image URL",
+        "caption": "Caption"
+      },
+      "placeholders": {
+        "imageUrl": "https://...",
+        "caption": "Optional caption"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "delete": "Delete"
+      },
+      "dialog": {
+        "deleteTitle": "Delete Image",
+        "deleteDesc": "Are you sure? This will permanently delete the image."
+      },
+      "errors": {
+        "noFiles": "Select at least one image to upload",
+        "totalTooLarge": "The total upload size is too large. Keep it under {maxSizeMB}MB"
+      },
+      "empty": "No images uploaded yet",
+      "targetLabel": {
+        "community": "Whole community",
+        "unknownClub": "Unknown club"
+      },
+      "uploadQueued": "Image queued for review",
+      "uploadQueuedCount": "Queued {count} image(s) for review",
+      "statusUpdated": "Image status updated",
+      "deleted": "Image deleted successfully",
+      "dropzone": {
+        "title": "Drag and drop images here, or click to browse",
+        "description": "PNG, JPG, and WebP up to {maxSizeMB}MB",
+        "selectionCount": "{count} file(s) selected",
+        "removedAnnouncement": "Removed {fileName}",
+        "errors": {
+          "tooMany": "You can select up to {maxFiles} files at once",
+          "unsupported": "{fileName} is not supported. Use PNG, JPG, or WebP",
+          "tooLarge": "{fileName} is too large. Keep it under {maxSizeMB}MB"
+        },
+        "aria": {
+          "uploadArea": "Upload images. Drag and drop or click to browse.",
+          "remove": "Remove {fileName}",
+          "addMore": "Add more images"
+        }
+      }
+    },
+    "tags": {
+      "title": "Tag Management",
+      "create": "Create Tag",
+      "columns": {
+        "name": "Name",
+        "color": "Color",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "dialog": {
+        "createTitle": "Create Tag",
+        "editTitle": "Edit Tag",
+        "deleteTitle": "Delete Tag",
+        "deleteDesc": "Are you sure? This action cannot be undone."
+      },
+      "form": {
+        "name": "Tag Name",
+        "color": "Color"
+      },
+      "empty": "No tags created yet",
+      "created": "Tag created successfully",
+      "updated": "Tag updated successfully",
+      "deleted": "Tag deleted successfully"
+    },
+    "reports": {
+      "title": "Report Management",
+      "columns": {
+        "reporter": "Reporter",
+        "targetType": "Target Type",
+        "reason": "Reason",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewTarget": "View Target",
+        "viewReason": "View Full Reason",
+        "resolve": "Resolve",
+        "dismiss": "Dismiss"
+      },
+      "dialog": {
+        "reasonTitle": "Report Reason",
+        "resolveTitle": "Resolve Report",
+        "resolveDesc": "Mark this report as resolved.",
+        "dismissTitle": "Dismiss Report",
+        "dismissDesc": "Dismiss this report without action."
+      },
+      "empty": "No reports",
+      "resolved": "Report resolved",
+      "dismissed": "Report dismissed"
+    },
+    "clubs": {
+      "title": "Club Management",
+      "create": "Create Club",
+      "columns": {
+        "name": "Name",
+        "cover": "Cover",
+        "description": "Description",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "dialog": {
+        "createTitle": "Create Club",
+        "editTitle": "Edit Club",
+        "deleteTitle": "Delete Club",
+        "deleteDesc": "Are you sure? This action cannot be undone."
+      },
+      "form": {
+        "name": "Club Name",
+        "description": "Description",
+        "coverImageUrl": "Cover Image URL"
+      },
+      "empty": "No clubs created yet",
+      "created": "Club created successfully",
+      "updated": "Club updated successfully",
+      "deleted": "Club deleted successfully"
+    },
+    "backToSite": "Back to site"
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or has been moved.",
+      "code": "404"
+    },
+    "serverError": {
+      "title": "An error occurred",
+      "description": "We're sorry, something went wrong.",
+      "tryAgain": "Try again"
+    },
+    "pages": {
+      "unauthorized": {
+        "code": "401",
+        "title": "Please log in to continue",
+        "description": "You need to be authenticated to view this page. Sign in and try again."
+      },
+      "forbidden": {
+        "code": "403",
+        "title": "You do not have access",
+        "description": "Your account does not have permission to view this page or perform this action."
+      },
+      "rateLimit": {
+        "code": "429",
+        "title": "Too many requests",
+        "description": "Requests are coming in too quickly right now. Please wait a moment and try again.",
+        "descriptionWithRetryAfter": "Requests are coming in too quickly right now. Please try again in about {seconds} seconds."
+      },
+      "serviceUnavailable": {
+        "code": "503",
+        "title": "Service temporarily unavailable",
+        "description": "The service is busy or undergoing maintenance. Please try again in a little while.",
+        "descriptionWithRetryAfter": "The service is busy or undergoing maintenance. Please try again in about {seconds} seconds."
+      }
+    },
+    "network": "Unable to connect. Check your internet connection.",
+    "generic": "An error occurred. Please try again later.",
+    "rateLimit": "Too many requests. Please wait a moment.",
+    "unauthorized": "Your session has expired. Please log in again.",
+    "forbidden": "You don't have permission for this action.",
+    "conflict": "This resource was modified by someone else. Please refresh.",
+    "serviceUnavailable": "Service temporarily unavailable. Please try again later.",
+    "failedToLoad": "Failed to load data",
+    "pleaseTryAgain": "Please try again.",
+    "submissionFailed": "Submission failed",
+    "submissionFailedDescription": "An error occurred while saving. Please check your input and try again."
+  },
+  "report": {
+    "trigger": "Report",
+    "title": "Report Inappropriate Content",
+    "description": "If you find an issue with this content, please describe the problem below.",
+    "reasonLabel": "Reason",
+    "reasonPlaceholder": "Describe the issue in detail…",
+    "reasonHint": "{current} / {max} characters (minimum {min})",
+    "cancel": "Cancel",
+    "submit": "Submit Report",
+    "submitting": "Submitting…",
+    "submitted": "Report submitted. Thank you for your help.",
+    "error": "Failed to submit the report."
+  },
+  "footer": {
+    "copyright": "© 2026 VRC 10月同期会. All rights reserved.",
+    "discord": "Discord",
+    "twitter": "X (Twitter)",
+    "language": "日本語"
+  }
+}
