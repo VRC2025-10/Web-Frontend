@@ -48,7 +48,7 @@ export function MarkdownPreview({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="prose prose-sm dark:prose-invert min-h-[150px] rounded-xl border border-border p-4">
+            <div className="markdown-content prose prose-sm dark:prose-invert min-h-[150px] max-w-none rounded-xl border border-border p-4">
               {value ? (
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {value}

@@ -75,7 +75,7 @@ export default async function ClubDetailPage(props: { params: Promise<{ id: stri
           <SectionHeader title={t("detail.aboutTitle")} />
           {club.description_html ? (
             <div
-              className="prose prose-sm prose-neutral mt-4 max-w-none dark:prose-invert [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+              className="markdown-content prose prose-sm prose-neutral mt-4 max-w-none dark:prose-invert"
               dangerouslySetInnerHTML={{ __html: club.description_html }}
             />
           ) : (

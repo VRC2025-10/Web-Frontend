@@ -72,7 +72,7 @@ export default async function EventDetailPage(props: { params: Promise<{ id: str
             </div>
           )}
           {event.description_markdown && (
-            <div className="mt-8 prose prose-neutral dark:prose-invert max-w-none">
+            <div className="markdown-content mt-8 max-w-none prose prose-neutral dark:prose-invert">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {event.description_markdown}
               </ReactMarkdown>

@@ -89,7 +89,10 @@ export default async function MemberDetailPage(props: { params: Promise<{ id: st
             <CardContent className="p-0">
               <h2 className="text-xl font-bold">{t("detail.about")}</h2>
               {member.bio_html ? (
-                <div className="mt-4 prose prose-neutral dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: member.bio_html }} />
+                <div
+                  className="markdown-content mt-4 max-w-none prose prose-neutral dark:prose-invert"
+                  dangerouslySetInnerHTML={{ __html: member.bio_html }}
+                />
               ) : (
                 <p className="mt-4 text-muted-foreground">{t("detail.noBio")}</p>
               )}
