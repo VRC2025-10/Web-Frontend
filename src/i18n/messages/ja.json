@@ -1,0 +1,541 @@
+{
+  "common": {
+    "siteTitle": "VRC 10月同期会",
+    "loading": "読み込み中…",
+    "error": "エラーが発生しました",
+    "retry": "再試行",
+    "back": "戻る",
+    "backToHome": "ホームに戻る",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "confirm": "確認",
+    "close": "閉じる",
+    "search": "検索",
+    "viewAll": "すべて見る →",
+    "noResults": "結果はありません",
+    "skipToContent": "メインコンテンツへスキップ"
+  },
+  "nav": {
+    "home": "ホーム",
+    "events": "イベント",
+    "members": "メンバー",
+    "clubs": "部活動",
+    "admin": "管理画面",
+    "settings": "設定",
+    "profile": "プロフィール",
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "mobileMenu": "メニュー"
+  },
+  "theme": {
+    "light": "ライトモード",
+    "dark": "ダークモード",
+    "system": "システム設定"
+  },
+  "errorPreview": {
+    "eyebrow": "Preview Lab",
+    "title": "エラーページの確認用ルート",
+    "description": "主要な HTTP エラー画面を見た目込みで確認するためのプレビューです。401、403、404、500 は専用のトリガールートから実際に例外を投げて表示します。429 と 503 はそのまま専用ページを開きます。",
+    "note": "通常導線には出していないので、必要なときだけこのページを直接開いて使ってください。",
+    "open": "開く",
+    "items": {
+      "unauthorized": {
+        "code": "401",
+        "title": "Unauthorized",
+        "description": "未認証時の画面を表示します。"
+      },
+      "forbidden": {
+        "code": "403",
+        "title": "Forbidden",
+        "description": "権限不足時の画面を表示します。"
+      },
+      "notFound": {
+        "code": "404",
+        "title": "Not Found",
+        "description": "ページ未検出の画面を表示します。"
+      },
+      "rateLimit": {
+        "code": "429",
+        "title": "Too Many Requests",
+        "description": "レート制限ページをそのまま開きます。"
+      },
+      "serverError": {
+        "code": "500",
+        "title": "Runtime Error",
+        "description": "ルート内で例外を投げて汎用エラー画面を表示します。"
+      },
+      "serviceUnavailable": {
+        "code": "503",
+        "title": "Service Unavailable",
+        "description": "サービス一時停止ページをそのまま開きます。"
+      }
+    }
+  },
+  "home": {
+    "meta": {
+      "description": "VRChat 10月同期会のコミュニティサイト"
+    },
+    "hero": {
+      "title": "VRC 10月同期会",
+      "subtitle": "VRChatの10月同期メンバーが集うコミュニティ",
+      "cta": {
+        "events": "イベントを見る",
+        "members": "メンバーを見る"
+      }
+    },
+    "events": {
+      "title": "今後のイベント",
+      "viewAll": "すべて見る →",
+      "empty": "予定されているイベントはありません"
+    },
+    "members": {
+      "title": "最近のメンバー",
+      "viewAll": "すべて見る →",
+      "empty": "まだメンバーがいません"
+    }
+  },
+  "events": {
+    "title": "イベント",
+    "meta": {
+      "title": "イベント",
+      "description": "VRChat 10月同期会のイベント一覧"
+    },
+    "filters": {
+      "upcoming": "今後",
+      "past": "過去",
+      "all": "すべて"
+    },
+    "sort": {
+      "dateDesc": "新しい順",
+      "dateAsc": "古い順"
+    },
+    "empty": "イベントが見つかりません",
+    "resetFilters": "フィルターをリセット",
+    "host": "主催",
+    "location": "場所",
+    "detail": {
+      "backButton": "イベント一覧へ戻る",
+      "schedule": "日時",
+      "joinEvent": "イベントに参加",
+      "ongoing": "開催中",
+      "ended": "終了",
+      "report": "報告する",
+      "join": {
+        "upcoming": "イベントはまだ始まっていません",
+        "vrchat": "VRChatで参加",
+        "discord": "Discordボイスに参加",
+        "ended": "このイベントは終了しました"
+      }
+    }
+  },
+  "members": {
+    "title": "メンバー",
+    "meta": {
+      "title": "メンバー",
+      "description": "VRChat 10月同期会のメンバー一覧"
+    },
+    "search": {
+      "placeholder": "メンバーを検索…",
+      "searching": "検索中…",
+      "resultsCount": "{count}件のメンバーが見つかりました",
+      "noResults": "メンバーが見つかりません"
+    },
+    "empty": "まだメンバーがいません",
+    "detail": {
+      "about": "自己紹介",
+      "editProfile": "プロフィールを編集",
+      "privateProfile": "このプロフィールは非公開です",
+      "report": "報告する",
+      "backButton": "メンバー一覧へ戻る",
+      "noBio": "このメンバーはまだ自己紹介を書いていません。"
+    }
+  },
+  "clubs": {
+    "title": "部活動",
+    "meta": {
+      "title": "部活動",
+      "description": "VRChat 10月同期会の部活動一覧"
+    },
+    "empty": "まだ部活動がありません",
+    "backToList": "部活動一覧へ戻る",
+    "detail": {
+      "aboutTitle": "部活について",
+      "owner": "部長",
+      "unknownOwner": "未設定",
+      "members": "メンバー {count}人",
+      "noMembers": "まだメンバー情報がありません",
+      "noDescription": "この部活の説明はまだありません"
+    },
+    "gallery": {
+      "title": "ギャラリー",
+      "empty": "まだ写真がありません",
+      "addPhotos": "写真を追加"
+    }
+  },
+  "profile": {
+    "title": "プロフィール編集",
+    "meta": {
+      "description": "プロフィールの編集"
+    },
+    "fields": {
+      "name": "表示名",
+      "nameHelp": "Discordから同期されます",
+      "vrcId": "VRChat ID",
+      "xId": "X (Twitter)",
+      "bio": "自己紹介",
+      "bioPreview": "プレビュー",
+      "bioEdit": "編集",
+      "isPublic": "プロフィールを公開する",
+      "isPublicHelp": "オフにするとメンバー一覧に表示されません"
+    },
+    "saved": "プロフィールが保存されました",
+    "saveError": "保存に失敗しました"
+  },
+  "auth": {
+    "login": {
+      "title": "ログイン",
+      "subtitle": "Discordアカウントでログインしてください",
+      "button": "Discordでログイン",
+      "footnote": "このサイトはVRChat 10月同期会のメンバー限定です"
+    },
+    "errors": {
+      "auth_failed": "認証に失敗しました。もう一度お試しください。",
+      "csrf_failed": "セッションが無効です。ページを再読み込みしてください。",
+      "not_guild_member": "このサイトは10月同期会のDiscordサーバーメンバーのみ利用できます。",
+      "discord_error": "Discord連携中にエラーが発生しました。"
+    }
+  },
+  "admin": {
+    "title": "管理画面",
+    "dashboard": {
+      "title": "ダッシュボード",
+      "totalUsers": "総メンバー数",
+      "totalEvents": "総イベント数",
+      "totalClubs": "総部活数",
+      "pendingReports": "未対応レポート",
+      "eyebrow": "管理",
+      "heroTitle": "運営に必要な情報をまとめて確認できます。",
+      "heroDescription": "主要な件数と管理画面への導線をまとめています。未対応レポートがある場合は、まずそこから確認してください。",
+      "ctaReports": "レポートを確認",
+      "ctaGallery": "ギャラリーを管理",
+      "pulseTitle": "優先事項",
+      "pulsePrimaryLabel": "最優先",
+      "pulsePrimaryAlert": "未対応レポートが {count} 件あります。対応状況を先に確認してください。",
+      "pulsePrimaryCalm": "未対応レポートはありません。他の管理作業を進められます。",
+      "pulseSecondaryLabel": "イベント",
+      "pulseSecondaryText": "イベントは合計 {count} 件です。日程や公開状態の確認が必要ならイベント管理を開いてください。",
+      "pulseTertiaryLabel": "部活",
+      "pulseTertiaryText": "部活は合計 {count} 件です。紹介内容や写真の更新は部活管理とギャラリーから行えます。",
+      "hints": {
+        "totalUsers": "登録済みメンバー数",
+        "totalEvents": "管理対象のイベント数",
+        "totalClubs": "公開中の部活数",
+        "pendingReportsActive": "優先確認が必要です",
+        "pendingReportsClear": "緊急対応はありません"
+      },
+      "actionsTitle": "ショートカット",
+      "actionsDescription": "よく使う管理画面へ直接移動できます。",
+      "actions": {
+        "membersTitle": "メンバー管理",
+        "membersDescription": "ロール変更、状態確認、プロフィール確認を行います。",
+        "eventsTitle": "イベント管理",
+        "eventsDescription": "日程、説明、公開状態を更新します。",
+        "galleryTitle": "ギャラリー管理",
+        "galleryDescription": "全体写真と部活写真を整理します。",
+        "reportsTitle": "レポート管理",
+        "reportsDescription": "未対応レポートの確認と対応を行います。"
+      },
+      "moodboardTitle": "確認メモ",
+      "moodboardFirstLabel": "メンバー",
+      "moodboardFirstText": "登録メンバーは {count} 人です。公開ページへの影響が大きい変更では、この件数を前提に確認してください。",
+      "moodboardSecondLabel": "イベントと写真",
+      "moodboardSecondText": "更新前に日付、公開状態、写真の対象範囲を確認してください。",
+      "moodboardThirdLabel": "レポート",
+      "moodboardThirdText": "未対応レポートは {count} 件です。残っている場合は最優先で確認してください。"
+    },
+    "users": {
+      "title": "ユーザー管理",
+      "filterRole": "ロール",
+      "filterSearch": "名前で検索…",
+      "allRoles": "すべてのロール",
+      "columns": {
+        "user": "ユーザー",
+        "role": "ロール",
+        "status": "ステータス",
+        "joined": "登録日",
+        "actions": "操作"
+      },
+      "actions": {
+        "viewProfile": "プロフィールを見る",
+        "changeRole": "ロール変更",
+        "suspend": "停止",
+        "activate": "有効化"
+      },
+      "dialog": {
+        "changeRoleTitle": "ロール変更",
+        "changeRoleDesc": "このユーザーの新しいロールを選択してください。",
+        "suspendTitle": "ユーザーを停止",
+        "suspendDesc": "よろしいですか？このユーザーはアクセスできなくなります。",
+        "activateTitle": "ユーザーを有効化",
+        "activateDesc": "このユーザーのアクセスを復元します。"
+      },
+      "empty": "ユーザーが見つかりません",
+      "roleChanged": "ロールが更新されました",
+      "statusChanged": "ユーザーステータスが更新されました"
+    },
+    "events": {
+      "title": "イベント管理",
+      "create": "イベント作成",
+      "columns": {
+        "title": "タイトル",
+        "date": "日時",
+        "status": "ステータス",
+        "tags": "タグ",
+        "actions": "操作"
+      },
+      "actions": {
+        "edit": "編集",
+        "delete": "削除"
+      },
+      "dialog": {
+        "createTitle": "イベント作成",
+        "editTitle": "イベント編集",
+        "deleteTitle": "イベント削除",
+        "deleteDesc": "よろしいですか？この操作は取り消せません。"
+      },
+      "form": {
+        "title": "タイトル",
+        "description": "説明",
+        "startTime": "開始日時",
+        "endTime": "終了日時",
+        "location": "場所",
+        "status": "ステータス"
+      },
+      "empty": "まだイベントがありません",
+      "created": "イベントが作成されました",
+      "updated": "イベントが更新されました",
+      "deleted": "イベントが削除されました"
+    },
+    "galleries": {
+      "title": "ギャラリー管理",
+      "description": "写真の投稿先を、同期会全体か特定の部活かで明確に分けて管理します。",
+      "uploadTitle": "写真をアップロード",
+      "uploadHelp": "同期会全体か特定の部活かを選び、ローカルの画像をまとめて追加できます。",
+      "uploadButton": "写真をアップロード",
+      "uploadConstraints": "1回につき最大{maxFiles}枚、各{maxSizeMB}MBまで、合計{totalSizeMB}MBまでアップロードできます。",
+      "targetCommunity": "同期会全体",
+      "targetClub": "特定の部活",
+      "selectClub": "部活を選択",
+      "clubOptional": "不要",
+      "columns": {
+        "thumbnail": "サムネイル",
+        "target": "掲載先",
+        "uploader": "アップロード者",
+        "club": "部活動",
+        "status": "ステータス",
+        "date": "日付",
+        "actions": "操作"
+      },
+      "labels": {
+        "target": "掲載先",
+        "club": "部活",
+        "imageUrl": "画像URL",
+        "caption": "キャプション"
+      },
+      "placeholders": {
+        "imageUrl": "https://...",
+        "caption": "キャプションは任意です"
+      },
+      "actions": {
+        "approve": "承認",
+        "reject": "却下",
+        "delete": "削除"
+      },
+      "dialog": {
+        "deleteTitle": "画像を削除",
+        "deleteDesc": "よろしいですか？画像は完全に削除されます。"
+      },
+      "errors": {
+        "noFiles": "アップロードする画像を選択してください",
+        "totalTooLarge": "合計サイズが大きすぎます。{maxSizeMB}MB以下にしてください"
+      },
+      "empty": "まだ画像がアップロードされていません",
+      "targetLabel": {
+        "community": "同期会全体",
+        "unknownClub": "不明な部活"
+      },
+      "uploadQueued": "画像を審査待ちに追加しました",
+      "uploadQueuedCount": "{count}枚の画像を審査待ちに追加しました",
+      "statusUpdated": "画像ステータスが更新されました",
+      "deleted": "画像が削除されました",
+      "dropzone": {
+        "title": "画像をドラッグ＆ドロップ、またはクリックして選択",
+        "description": "PNG / JPG / WebP を {maxSizeMB}MB まで",
+        "selectionCount": "{count}枚の画像を選択中",
+        "removedAnnouncement": "{fileName} を削除しました",
+        "errors": {
+          "tooMany": "一度に選べるのは最大{maxFiles}枚です",
+          "unsupported": "{fileName} は PNG / JPG / WebP のみ対応しています",
+          "tooLarge": "{fileName} は大きすぎます。{maxSizeMB}MB以下にしてください"
+        },
+        "aria": {
+          "uploadArea": "画像アップロード。ドラッグ＆ドロップするかクリックして選択してください。",
+          "remove": "{fileName} を削除",
+          "addMore": "画像を追加"
+        }
+      }
+    },
+    "tags": {
+      "title": "タグ管理",
+      "create": "タグ作成",
+      "columns": {
+        "name": "名前",
+        "color": "色",
+        "actions": "操作"
+      },
+      "actions": {
+        "edit": "編集",
+        "delete": "削除"
+      },
+      "dialog": {
+        "createTitle": "タグ作成",
+        "editTitle": "タグ編集",
+        "deleteTitle": "タグ削除",
+        "deleteDesc": "よろしいですか？この操作は取り消せません。"
+      },
+      "form": {
+        "name": "タグ名",
+        "color": "色"
+      },
+      "empty": "まだタグがありません",
+      "created": "タグが作成されました",
+      "updated": "タグが更新されました",
+      "deleted": "タグが削除されました"
+    },
+    "reports": {
+      "title": "レポート管理",
+      "columns": {
+        "reporter": "報告者",
+        "targetType": "対象タイプ",
+        "reason": "理由",
+        "status": "ステータス",
+        "date": "日付",
+        "actions": "操作"
+      },
+      "actions": {
+        "viewTarget": "対象を見る",
+        "viewReason": "理由の全文を見る",
+        "resolve": "解決",
+        "dismiss": "却下"
+      },
+      "dialog": {
+        "reasonTitle": "報告理由",
+        "resolveTitle": "レポートを解決",
+        "resolveDesc": "このレポートを解決済みにします。",
+        "dismissTitle": "レポートを却下",
+        "dismissDesc": "このレポートを対応なしで却下します。"
+      },
+      "empty": "レポートはありません",
+      "resolved": "レポートが解決されました",
+      "dismissed": "レポートが却下されました"
+    },
+    "clubs": {
+      "title": "部活動管理",
+      "create": "部活動作成",
+      "columns": {
+        "name": "名前",
+        "cover": "カバー",
+        "description": "説明",
+        "created": "作成日",
+        "actions": "操作"
+      },
+      "actions": {
+        "edit": "編集",
+        "delete": "削除"
+      },
+      "dialog": {
+        "createTitle": "部活動作成",
+        "editTitle": "部活動編集",
+        "deleteTitle": "部活動削除",
+        "deleteDesc": "よろしいですか？この操作は取り消せません。"
+      },
+      "form": {
+        "name": "部活動名",
+        "description": "説明",
+        "coverImageUrl": "カバー画像URL"
+      },
+      "empty": "まだ部活動がありません",
+      "created": "部活動が作成されました",
+      "updated": "部活動が更新されました",
+      "deleted": "部活動が削除されました"
+    },
+    "backToSite": "サイトに戻る"
+  },
+  "errors": {
+    "notFound": {
+      "title": "ページが見つかりません",
+      "description": "お探しのページは存在しないか、移動した可能性があります。",
+      "code": "404"
+    },
+    "serverError": {
+      "title": "エラーが発生しました",
+      "description": "申し訳ありません。問題が発生しました。",
+      "tryAgain": "再試行"
+    },
+    "pages": {
+      "unauthorized": {
+        "code": "401",
+        "title": "ログインして続行してください",
+        "description": "このページを表示するには認証が必要です。ログイン後にもう一度お試しください。"
+      },
+      "forbidden": {
+        "code": "403",
+        "title": "このページにはアクセスできません",
+        "description": "この操作またはページを利用する権限がありません。必要であれば管理者に確認してください。"
+      },
+      "rateLimit": {
+        "code": "429",
+        "title": "リクエストが多すぎます",
+        "description": "短時間にアクセスが集中しています。少し時間をおいてから再試行してください。",
+        "descriptionWithRetryAfter": "短時間にアクセスが集中しています。約{seconds}秒後にもう一度お試しください。"
+      },
+      "serviceUnavailable": {
+        "code": "503",
+        "title": "サービスを一時的に利用できません",
+        "description": "現在サーバーが混み合っているか、メンテナンス中です。時間をおいてから再試行してください。",
+        "descriptionWithRetryAfter": "現在サーバーが混み合っているか、メンテナンス中です。約{seconds}秒後にもう一度お試しください。"
+      }
+    },
+    "network": "接続できません。インターネット接続を確認してください。",
+    "generic": "エラーが発生しました。後でもう一度お試しください。",
+    "rateLimit": "リクエストが多すぎます。しばらくお待ちください。",
+    "unauthorized": "セッションが切れました。再度ログインしてください。",
+    "forbidden": "この操作を行う権限がありません。",
+    "conflict": "このリソースは他のユーザーによって変更されました。ページを更新してください。",
+    "serviceUnavailable": "サービスが一時的に利用できません。後でもう一度お試しください。",
+    "failedToLoad": "データの読み込みに失敗しました",
+    "pleaseTryAgain": "もう一度お試しください。",
+    "submissionFailed": "送信に失敗しました",
+    "submissionFailedDescription": "保存中にエラーが発生しました。入力内容を確認してもう一度お試しください。"
+  },
+  "report": {
+    "trigger": "報告する",
+    "title": "不適切なコンテンツの報告",
+    "description": "このコンテンツに問題がある場合、理由を記入して報告してください。",
+    "reasonLabel": "報告理由",
+    "reasonPlaceholder": "問題の詳細を記入してください…",
+    "reasonHint": "{current} / {max}文字（最低{min}文字）",
+    "cancel": "キャンセル",
+    "submit": "報告する",
+    "submitting": "送信中…",
+    "submitted": "報告が送信されました。ご協力ありがとうございます。",
+    "error": "報告の送信に失敗しました。"
+  },
+  "footer": {
+    "copyright": "© 2026 VRC 10月同期会. All rights reserved.",
+    "discord": "Discord",
+    "twitter": "X (Twitter)",
+    "language": "English"
+  }
+}
