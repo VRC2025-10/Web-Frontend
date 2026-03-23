@@ -203,7 +203,8 @@
       "auth_failed": "Authentication failed. Please try again.",
       "csrf_failed": "Session invalid. Please reload the page.",
       "not_guild_member": "This site is only available to VRC 10月同期会 Discord server members.",
-      "discord_error": "An error occurred during Discord authentication."
+      "discord_error": "An error occurred during Discord authentication.",
+      "suspended": "This account has been suspended. Please contact an administrator."
     }
   },
   "admin": {

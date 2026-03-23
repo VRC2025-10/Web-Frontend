@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const errorKeys = ["auth_failed", "csrf_failed", "not_guild_member", "discord_error"] as const;
+const errorKeys = ["auth_failed", "csrf_failed", "not_guild_member", "discord_error", "suspended"] as const;
 
 export default async function LoginPage(props: { searchParams: Promise<{ error?: string }> }) {
   const searchParams = await props.searchParams;

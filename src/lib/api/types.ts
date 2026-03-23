@@ -72,7 +72,8 @@ export type LoginErrorCode =
   | "auth_failed"
   | "csrf_failed"
   | "not_guild_member"
-  | "discord_error";
+  | "discord_error"
+  | "suspended";
 
 /** Event in public listing */
 export interface PublicEvent {
