@@ -93,6 +93,40 @@
       "empty": "No members yet"
     }
   },
+  "events": {
+    "title": "Events",
+    "meta": {
+      "title": "Events",
+      "description": "Events of VRC 10月同期会"
+    },
+    "filters": {
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "all": "All"
+    },
+    "sort": {
+      "dateDesc": "Newest first",
+      "dateAsc": "Oldest first"
+    },
+    "empty": "No events found",
+    "resetFilters": "Reset filters",
+    "host": "Hosted by",
+    "location": "Location",
+    "detail": {
+      "backButton": "Back to events",
+      "schedule": "Schedule",
+      "joinEvent": "Join Event",
+      "ongoing": "Ongoing",
+      "ended": "Ended",
+      "report": "Report",
+      "join": {
+        "upcoming": "Event hasn't started yet",
+        "vrchat": "Join in VRChat",
+        "discord": "Join Discord Voice",
+        "ended": "This event has ended"
+      }
+    }
+  },
   "members": {
     "title": "Members",
     "meta": {
@@ -188,6 +222,7 @@
       "users": "Users",
       "roles": "Roles",
       "galleries": "Galleries",
+      "events": "Events",
       "tags": "Tags",
       "reports": "Reports",
       "clubs": "Clubs"
@@ -195,6 +230,7 @@
     "dashboard": {
       "title": "Dashboard",
       "totalUsers": "Total Members",
+      "totalEvents": "Total Events",
       "totalClubs": "Total Clubs",
       "pendingReports": "Pending Reports",
       "eyebrow": "Admin",
@@ -206,10 +242,13 @@
       "pulsePrimaryLabel": "Immediate focus",
       "pulsePrimaryAlert": "There are {count} pending reports. Review their status before moving on to other work.",
       "pulsePrimaryCalm": "There are no pending reports. You can continue with other maintenance tasks.",
+      "pulseSecondaryLabel": "Events",
+      "pulseSecondaryText": "There are {count} events. Open event management to review dates and publication status.",
       "pulseTertiaryLabel": "Clubs",
       "pulseTertiaryText": "There are {count} clubs. Update club details and photos from club management and galleries.",
       "hints": {
         "totalUsers": "Registered member accounts",
+        "totalEvents": "Events currently managed",
         "totalClubs": "Published clubs",
         "pendingReportsActive": "Needs attention first",
         "pendingReportsClear": "No urgent moderation"
@@ -219,6 +258,8 @@
       "actions": {
         "membersTitle": "Manage members",
         "membersDescription": "Review roles, account status, and profile access.",
+        "eventsTitle": "Manage events",
+        "eventsDescription": "Update schedules, descriptions, and publication status.",
         "scheduleTitle": "Schedule",
         "scheduleDescription": "Open the internal schedule board to adjust staff entries, restricted slots, and notification rules.",
         "scheduleStat": "internal board",
@@ -346,6 +387,39 @@
       "empty": "No users found",
       "roleChanged": "Role updated successfully",
       "statusChanged": "User status updated"
+    },
+    "events": {
+      "title": "Event Management",
+      "create": "Create Event",
+      "columns": {
+        "title": "Title",
+        "date": "Date",
+        "status": "Status",
+        "tags": "Tags",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "dialog": {
+        "createTitle": "Create Event",
+        "editTitle": "Edit Event",
+        "deleteTitle": "Delete Event",
+        "deleteDesc": "Are you sure? This action cannot be undone."
+      },
+      "form": {
+        "title": "Title",
+        "description": "Description",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "location": "Location",
+        "status": "Status"
+      },
+      "empty": "No events created yet",
+      "created": "Event created successfully",
+      "updated": "Event updated successfully",
+      "deleted": "Event deleted successfully"
     },
     "galleries": {
       "title": "Gallery Management",
