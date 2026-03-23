@@ -51,12 +51,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <NextIntlClientProvider
             locale={locale}
             messages={{
-              common: {
-                backToHome: messages.common.backToHome,
-              },
-              errors: {
-                serverError: messages.errors.serverError,
-              },
+              common: messages.common,
+              nav: messages.nav,
+              theme: messages.theme,
+              admin: messages.admin,
+              schedule: messages.schedule,
+              errors: messages.errors,
             }}
           >
             {children}

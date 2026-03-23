@@ -5,7 +5,6 @@ import { getTranslations } from "next-intl/server";
 import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,8 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar, MapPin, ArrowLeft } from "lucide-react";
 import { ReportDialog } from "@/components/shared/report-dialog";
 import { formatEventDateRange, getEventStatus } from "@/lib/date";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { RichTextContent } from "@/components/shared/rich-text-content";
 import type { Metadata } from "next";
 import { getLocaleMessages } from "@/i18n/messages";
 
@@ -72,11 +70,7 @@ export default async function EventDetailPage(props: { params: Promise<{ id: str
             </div>
           )}
           {event.description_markdown && (
-            <div className="mt-8 prose prose-neutral dark:prose-invert max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {event.description_markdown}
-              </ReactMarkdown>
-            </div>
+            <RichTextContent markdown={event.description_markdown} className="mt-8" />
           )}
         </div>
 

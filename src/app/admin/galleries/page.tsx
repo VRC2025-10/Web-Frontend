@@ -1,4 +1,5 @@
 import { getAdminGalleries } from "@/lib/api/admin";
+import { requireMe } from "@/lib/api/auth";
 import { getClubs } from "@/lib/api/clubs";
 import { NextIntlClientProvider } from "next-intl";
 import { SectionHeader } from "@/components/shared/section-header";
@@ -9,6 +10,7 @@ import type { AdminGalleryImage, PaginatedResponse } from "@/lib/api/types";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getLocaleMessages } from "@/i18n/messages";
+import { forbidden } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Gallery Management | Admin",
@@ -19,6 +21,10 @@ export default async function AdminGalleriesPage(props: { searchParams: Promise<
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
   const clubId = searchParams.club;
+  const me = await requireMe();
+  if (!me.admin_permissions.manage_galleries) {
+    forbidden();
+  }
 
   let data: PaginatedResponse<AdminGalleryImage>;
   let clubs: Array<{ id: string; name: string }>;

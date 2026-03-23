@@ -1,4 +1,9 @@
 import type {
+  AdminManagedRole,
+  AdminPermissionSet,
+  AdminRolePayload,
+  AdminSystemRolePolicy,
+  AdminSystemRolePolicyPayload,
   AdminGalleryImage,
   AdminReport,
   AdminStats,
@@ -9,17 +14,28 @@ import type {
   PaginatedResponse,
   PublicClub,
   PublicClubDetail,
-  PublicEvent,
-  PublicEventDetail,
   PublicGalleryImage,
   PublicMember,
   PublicMemberDetail,
   ReportStatus,
   ReportTargetType,
+  ScheduleManagedRole,
+  ScheduleNotificationRule,
+  ScheduleTemplate,
+  ScheduleTimelineDay,
+  ScheduleTimelineEvent,
+  ScheduleVisibilityMode,
   Tag,
   UserRole,
   UserStatus,
 } from "./types";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeStringify from "rehype-stringify";
+import remarkGfm from "remark-gfm";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import { unified } from "unified";
+import { MARKDOWN_SANITIZE_SCHEMA } from "@/lib/markdown-schema";
 
 export interface MockApiErrorLike {
   status: number;
@@ -32,6 +48,7 @@ interface MockMemberRecord {
   discordId: string;
   displayName: string;
   avatarUrl: string | null;
+  discordRoleIds: string[];
   joinedAt: string;
   role: UserRole;
   status: UserStatus;
@@ -55,14 +72,40 @@ interface MockClubRecord {
 
 interface MockGalleryRecord extends AdminGalleryImage {}
 
+interface MockScheduleEventRecord {
+  id: string;
+  created_by_user_id: string;
+  title: string;
+  description: string;
+  start_at: string;
+  end_at: string;
+  visibility_mode: ScheduleVisibilityMode;
+  auto_notify_enabled: boolean;
+  visible_role_ids: string[];
+}
+
+interface MockScheduleState {
+  managedRoles: ScheduleManagedRole[];
+  templates: ScheduleTemplate[];
+  events: MockScheduleEventRecord[];
+  webhookUrl: string;
+  rules: ScheduleNotificationRule[];
+}
+
 interface MockState {
   meId: string;
   members: MockMemberRecord[];
+  adminSystemRoles: AdminSystemRolePolicy[];
+  adminRoles: AdminManagedRole[];
   clubs: MockClubRecord[];
-  events: PublicEvent[];
   tags: Tag[];
   reports: AdminReport[];
   galleries: MockGalleryRecord[];
+  schedule: MockScheduleState;
+}
+
+declare global {
+  var __VRC_WEB_DEV_MOCK_STATE__: MockState | undefined;
 }
 
 const DEV_MOCK_DISABLE_VALUES = new Set(["0", "false", "off"]);
@@ -84,8 +127,159 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+const markdownProcessor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkRehype)
+  .use(rehypeSanitize, MARKDOWN_SANITIZE_SCHEMA)
+  .use(rehypeStringify);
+
+const DEV_MOCK_PROFILE_MARKDOWN = `# 見出し1
+
+これは見出し1です。
+
+## 見出し2
+
+これは見出し2です。
+
+### 見出し3
+
+これは見出し3です。
+
+#### 見出し4
+
+これは見出し4です。
+
+##### 見出し5
+
+これは見出し5です。
+
+###### 見出し6
+
+これは見出し6です。
+
+## 段落
+
+これは1つ目の段落の1行目です。  
+これは1つ目の段落の2行目です。
+
+これは2つ目の段落の1行目です。  
+これは2つ目の段落の2行目です。
+
+## 順序無しリスト
+
+これは順序無しリストです。
+
+- 1
+- 2
+    - 2-1
+    - 2-2
+        - 2-2-1
+        - 2-2-2
+- 3
+
+これは順序無しリストです。
+
+## 順序付きリスト
+
+これは順序付きリストです。
+
+1. 1
+1. 2
+    1. 2-1
+    1. 2-2
+        1. 2-2-1
+        1. 2-2-2
+1. 3
+
+これは順序付きリストです。
+
+## 引用
+
+これは引用です。
+
+> 引用
+> 引用
+
+これは引用です。
+
+## コードブロック
+
+これはコードブロックです。
+
+\`\`\`ruby
+puts 1 + 1
+\`\`\`
+
+これはコードブロックです。
+
+## テーブル
+
+これはテーブルです。
+
+| Left align | Right align | Center align |
+|:-----------|------------:|:------------:|
+| This       |        This |     This     |
+| column     |      column |    column    |
+| will       |        will |     will     |
+| be         |          be |      be      |
+| left       |       right |    center    |
+| aligned    |     aligned |   aligned    |
+
+これはテーブルです。
+
+## リンク
+
+これは [リンク](http://example.com) です。
+
+## コード
+
+これは \`puts 1 + 1\` コードです。
+
+## 強い強調
+
+これは **強い強調** です。
+
+## 強調
+
+これは *強調* です。
+
+## 削除済みテキスト
+
+これは ~~削除済みテキスト~~ です。
+
+### 定義リスト
+
+これは定義リストです。
+
+<dl>
+  <dt>リンゴ</dt>
+  <dd>赤いフルーツ</dd>
+  <dt>オレンジ</dt>
+  <dd>橙色のフルーツ</dd>
+</dl>
+
+これは定義リストです。
+
+## 水平線
+
+これは水平線です。
+
+---
+
+これは水平線です。
+
+## 画像
+
+これは ![バナナ](https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Bananavarieties.jpg/220px-Bananavarieties.jpg) 画像です。
+`;
+
 function htmlFromText(text: string): string {
-  return `<p>${text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br />")}</p>`;
+  if (text.trim().length === 0) {
+    return "";
+  }
+
+  return String(markdownProcessor.processSync(text));
 }
 
 let nextSequence = 1000;
@@ -129,15 +323,15 @@ function createInitialState(): MockState {
       discordId: "100000000000000001",
       displayName: "Aki",
       avatarUrl: "/logo.png",
+      discordRoleIds: ["role-ops", "discord-role-admin-ops"],
       joinedAt: "2025-10-01T12:00:00.000Z",
       role: "super_admin",
       status: "active",
       profile: {
         vrc_id: "usr_11111111-1111-1111-1111-111111111111",
-        short_bio: "Community operator and late-night world hopper.",
         x_id: "aki_october",
-        bio_markdown: "I handle operations, events, and gallery reviews.",
-        bio_html: htmlFromText("I handle operations, events, and gallery reviews."),
+        bio_markdown: DEV_MOCK_PROFILE_MARKDOWN,
+        bio_html: htmlFromText(DEV_MOCK_PROFILE_MARKDOWN),
         is_public: true,
         updated_at: "2026-03-22T10:00:00.000Z",
       },
@@ -147,12 +341,12 @@ function createInitialState(): MockState {
       discordId: "100000000000000002",
       displayName: "Nao",
       avatarUrl: "/logo.png",
+      discordRoleIds: ["discord-role-gallery"],
       joinedAt: "2025-10-03T18:00:00.000Z",
       role: "member",
       status: "active",
       profile: {
         vrc_id: "usr_22222222-2222-2222-2222-222222222222",
-        short_bio: "Builder and lighting enthusiast.",
         x_id: "nao_builds",
         bio_markdown: "I like building calm spaces and event backdrops.",
         bio_html: htmlFromText("I like building calm spaces and event backdrops."),
@@ -165,12 +359,12 @@ function createInitialState(): MockState {
       discordId: "100000000000000003",
       displayName: "Mio",
       avatarUrl: "/logo.png",
+      discordRoleIds: ["role-talent"],
       joinedAt: "2025-10-06T09:15:00.000Z",
       role: "staff",
       status: "active",
       profile: {
         vrc_id: null,
-        short_bio: "Event support and moderation.",
         x_id: null,
         bio_markdown: "I help with check-ins, moderation, and follow-up.",
         bio_html: htmlFromText("I help with check-ins, moderation, and follow-up."),
@@ -215,45 +409,14 @@ function createInitialState(): MockState {
     },
   ];
 
-  const events: PublicEvent[] = [
-    {
-      id: "event-autumn-social",
-      title: "Autumn Social Night",
-      description_markdown: "A relaxed meetup for photos, introductions, and world hopping.",
-      host_name: "Aki",
-      host_user_id: "100000000000000001",
-      event_status: "published",
-      start_time: "2026-03-28T12:00:00.000Z",
-      end_time: "2026-03-28T14:00:00.000Z",
-      location: "VRChat Group+",
-      tags: [tags[0], tags[1]],
-      created_at: "2026-03-10T12:00:00.000Z",
-      updated_at: "2026-03-18T12:00:00.000Z",
-    },
-    {
-      id: "event-build-review",
-      title: "Build Review Session",
-      description_markdown: "Share works in progress and get environment feedback.",
-      host_name: "Nao",
-      host_user_id: "100000000000000002",
-      event_status: "draft",
-      start_time: "2026-04-02T11:00:00.000Z",
-      end_time: null,
-      location: "World Builders Room",
-      tags: [tags[2]],
-      created_at: "2026-03-11T15:30:00.000Z",
-      updated_at: "2026-03-19T09:45:00.000Z",
-    },
-  ];
-
   const reports: AdminReport[] = [
     {
       id: "report-1",
       reporter_id: "100000000000000003",
       reporter_username: "Mio",
-      target_type: "event",
-      target_id: "event-build-review",
-      reason: "Start time is missing in the announcement.",
+      target_type: "profile",
+      target_id: "100000000000000002",
+      reason: "Display name contains inappropriate text.",
       status: "pending",
       created_at: "2026-03-21T08:00:00.000Z",
     },
@@ -284,18 +447,178 @@ function createInitialState(): MockState {
     },
   ];
 
+  const schedule: MockScheduleState = {
+    managedRoles: [
+      {
+        id: "schedule-role-ops",
+        discord_role_id: "role-ops",
+        display_name: "Operations Lead",
+        description: "Can manage restricted entries, templates, and notification settings.",
+        can_manage_roles: true,
+        can_manage_events: true,
+        can_manage_templates: true,
+        can_manage_notifications: true,
+        can_view_restricted_events: true,
+      },
+      {
+        id: "schedule-role-talent",
+        discord_role_id: "role-talent",
+        display_name: "Talent",
+        description: "Can view restricted talent availability blocks.",
+        can_manage_roles: false,
+        can_manage_events: false,
+        can_manage_templates: false,
+        can_manage_notifications: false,
+        can_view_restricted_events: true,
+      },
+    ],
+    templates: [
+      {
+        id: "schedule-template-stream",
+        name: "Stream",
+        title: "Streaming slot",
+        description: "Primary streaming slot. Confirm world, lobby, and staff handoff before start.",
+        is_default: true,
+      },
+      {
+        id: "schedule-template-recording",
+        name: "Recording",
+        title: "Recording block",
+        description: "Recording session. Confirm assets, cast handoff, and delivery owner.",
+        is_default: false,
+      },
+    ],
+    events: [
+      {
+        id: "schedule-event-1",
+        created_by_user_id: "00000000-0000-0000-0000-000000000001",
+        title: "Collab stream prep",
+        description: "Asset handoff, overlay review, and final mic check.",
+        start_at: "2026-03-25T10:00:00.000Z",
+        end_at: "2026-03-25T12:00:00.000Z",
+        visibility_mode: "public",
+        auto_notify_enabled: true,
+        visible_role_ids: [],
+      },
+      {
+        id: "schedule-event-2",
+        created_by_user_id: "00000000-0000-0000-0000-000000000003",
+        title: "Talent-only rehearsal",
+        description: "Private rehearsal slot for the collab lineup.",
+        start_at: "2026-03-27T12:30:00.000Z",
+        end_at: "2026-03-27T15:00:00.000Z",
+        visibility_mode: "restricted",
+        auto_notify_enabled: false,
+        visible_role_ids: ["role-talent", "role-ops"],
+      },
+    ],
+    webhookUrl: "https://discord.com/api/webhooks/mock/schedule",
+    rules: [
+      {
+        id: "schedule-rule-1",
+        name: "1 hour reminder",
+        enabled: true,
+        schedule_type: "before_event",
+        offset_minutes: 60,
+        time_of_day: null,
+        window_start_minutes: null,
+        window_end_minutes: null,
+        body_template: "[{{rule_name}}] {{title}} starts at {{start_at}}\n{{description}}",
+        list_item_template: null,
+      },
+    ],
+  };
+
+  const adminRoles: AdminManagedRole[] = [
+    {
+      id: "admin-role-gallery",
+      discord_role_id: "discord-role-gallery",
+      display_name: "Gallery Crew",
+      description: "Can review gallery submissions and inspect dashboard counts.",
+      can_view_dashboard: true,
+      can_manage_users: false,
+      can_manage_roles: false,
+      can_manage_events: false,
+      can_manage_tags: false,
+      can_manage_reports: false,
+      can_manage_galleries: true,
+      can_manage_clubs: false,
+      updated_at: "2026-03-23T22:30:00.000Z",
+    },
+    {
+      id: "admin-role-admin-ops",
+      discord_role_id: "discord-role-admin-ops",
+      display_name: "Operations Admin",
+      description: "Can operate dashboard users, reports, clubs, and role policies.",
+      can_view_dashboard: true,
+      can_manage_users: true,
+      can_manage_roles: true,
+      can_manage_events: false,
+      can_manage_tags: false,
+      can_manage_reports: true,
+      can_manage_galleries: true,
+      can_manage_clubs: true,
+      updated_at: "2026-03-23T22:35:00.000Z",
+    },
+  ];
+
+  const adminSystemRoles: AdminSystemRolePolicy[] = [
+    {
+      role: "member",
+      can_view_dashboard: false,
+      can_manage_users: false,
+      can_manage_roles: false,
+      can_manage_events: false,
+      can_manage_tags: false,
+      can_manage_reports: false,
+      can_manage_galleries: false,
+      can_manage_clubs: false,
+      updated_at: "2026-03-23T22:40:00.000Z",
+    },
+    {
+      role: "staff",
+      can_view_dashboard: true,
+      can_manage_users: false,
+      can_manage_roles: false,
+      can_manage_events: false,
+      can_manage_tags: false,
+      can_manage_reports: true,
+      can_manage_galleries: true,
+      can_manage_clubs: true,
+      updated_at: "2026-03-23T22:40:00.000Z",
+    },
+    {
+      role: "admin",
+      can_view_dashboard: true,
+      can_manage_users: true,
+      can_manage_roles: true,
+      can_manage_events: true,
+      can_manage_tags: true,
+      can_manage_reports: true,
+      can_manage_galleries: true,
+      can_manage_clubs: true,
+      updated_at: "2026-03-23T22:40:00.000Z",
+    },
+  ];
+
   return {
     meId: members[0].id,
     members,
+    adminSystemRoles,
+    adminRoles,
     clubs,
-    events,
     tags,
     reports,
     galleries,
+    schedule,
   };
 }
 
-const state = createInitialState();
+const state = globalThis.__VRC_WEB_DEV_MOCK_STATE__ ?? createInitialState();
+
+if (!globalThis.__VRC_WEB_DEV_MOCK_STATE__) {
+  globalThis.__VRC_WEB_DEV_MOCK_STATE__ = state;
+}
 
 function getMockMeRecord(): MockMemberRecord {
   const me = state.members.find((member) => member.id === state.meId);
@@ -314,14 +637,69 @@ function toUserBrief(discordId: string) {
   };
 }
 
+function buildAdminPermissions(member: MockMemberRecord): AdminPermissionSet {
+  const base: AdminPermissionSet = member.role === "super_admin"
+    ? {
+        view_dashboard: true,
+        manage_users: true,
+        manage_roles: true,
+        manage_events: true,
+        manage_tags: true,
+        manage_reports: true,
+        manage_galleries: true,
+        manage_clubs: true,
+      }
+    : {
+        view_dashboard: false,
+        manage_users: false,
+        manage_roles: false,
+        manage_events: false,
+        manage_tags: false,
+        manage_reports: false,
+        manage_galleries: false,
+        manage_clubs: false,
+      };
+
+  const systemRole = state.adminSystemRoles.find((entry) => entry.role === member.role);
+  if (systemRole) {
+    base.view_dashboard = systemRole.can_view_dashboard;
+    base.manage_users = systemRole.can_manage_users;
+    base.manage_roles = systemRole.can_manage_roles;
+    base.manage_events = systemRole.can_manage_events;
+    base.manage_tags = systemRole.can_manage_tags;
+    base.manage_reports = systemRole.can_manage_reports;
+    base.manage_galleries = systemRole.can_manage_galleries;
+    base.manage_clubs = systemRole.can_manage_clubs;
+  }
+
+  const matchedRoles = state.adminRoles.filter((role) => member.discordRoleIds.includes(role.discord_role_id));
+
+  for (const role of matchedRoles) {
+    base.view_dashboard = base.view_dashboard || role.can_view_dashboard;
+    base.manage_users = base.manage_users || role.can_manage_users;
+    base.manage_roles = base.manage_roles || role.can_manage_roles;
+    base.manage_events = base.manage_events || role.can_manage_events;
+    base.manage_tags = base.manage_tags || role.can_manage_tags;
+    base.manage_reports = base.manage_reports || role.can_manage_reports;
+    base.manage_galleries = base.manage_galleries || role.can_manage_galleries;
+    base.manage_clubs = base.manage_clubs || role.can_manage_clubs;
+  }
+
+  return base;
+}
+
 function buildAuthMe() {
   const me = getMockMeRecord();
+  const adminPermissions = buildAdminPermissions(me);
   return {
     id: me.id,
     discord_id: me.discordId,
     discord_username: me.displayName,
     avatar_url: me.avatarUrl,
     role: me.role,
+    admin_access: Object.values(adminPermissions).some(Boolean),
+    admin_permissions: adminPermissions,
+    schedule_access: me.role !== "member",
     profile: {
       vrc_id: me.profile.vrc_id,
       x_id: me.profile.x_id,
@@ -334,7 +712,6 @@ function buildOwnProfile(profile: MyProfile) {
   return {
     nickname: null,
     vrc_id: profile.vrc_id,
-    short_bio: profile.short_bio ?? null,
     x_id: profile.x_id,
     bio_markdown: profile.bio_markdown,
     bio_html: profile.bio_html,
@@ -354,6 +731,7 @@ function buildPublicMember(member: MockMemberRecord) {
       ? {
           vrc_id: member.profile.vrc_id,
           x_id: member.profile.x_id,
+          bio_markdown: member.profile.bio_markdown,
           bio_html: member.profile.bio_html,
           avatar_url: member.avatarUrl,
           updated_at: member.profile.updated_at,
@@ -447,9 +825,127 @@ function buildClubGallery(clubId: string): PaginatedResponse<PublicGalleryImage>
 function buildAdminStats(): AdminStats {
   return {
     total_users: state.members.length,
-    total_events: state.events.length,
+    total_events: 0,
     total_clubs: state.clubs.length,
     pending_reports: state.reports.filter((report) => report.status === "pending").length,
+  };
+}
+
+function addJstDays(date: string, days: number) {
+  const [year, month, day] = date.split("-").map(Number);
+  const base = new Date(Date.UTC(year, month - 1, day));
+  base.setUTCDate(base.getUTCDate() + days);
+  return `${base.getUTCFullYear()}-${`${base.getUTCMonth() + 1}`.padStart(2, "0")}-${`${base.getUTCDate()}`.padStart(2, "0")}`;
+}
+
+function isoToJstDate(dateLike: string) {
+  const date = new Date(dateLike);
+  const shifted = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  return `${shifted.getUTCFullYear()}-${`${shifted.getUTCMonth() + 1}`.padStart(2, "0")}-${`${shifted.getUTCDate()}`.padStart(2, "0")}`;
+}
+
+function overlapsDate(date: string, startAt: string, endAt: string) {
+  const dayStart = new Date(`${date}T00:00:00.000Z`).getTime() - 9 * 60 * 60 * 1000;
+  const dayEnd = dayStart + 24 * 60 * 60 * 1000;
+  return new Date(startAt).getTime() < dayEnd && new Date(endAt).getTime() > dayStart;
+}
+
+function buildSchedulePermissions(role: UserRole) {
+  if (role === "admin" || role === "super_admin") {
+    return {
+      manage_roles: true,
+      manage_events: true,
+      manage_templates: true,
+      manage_notifications: true,
+      view_restricted_events: true,
+    };
+  }
+
+  if (role === "staff") {
+    return {
+      manage_roles: false,
+      manage_events: true,
+      manage_templates: false,
+      manage_notifications: false,
+      view_restricted_events: true,
+    };
+  }
+
+  return {
+    manage_roles: false,
+    manage_events: false,
+    manage_templates: false,
+    manage_notifications: false,
+    view_restricted_events: false,
+  };
+}
+
+function buildScheduleTimelineEvent(entry: MockScheduleEventRecord, viewerId: string): ScheduleTimelineEvent {
+  return {
+    id: entry.id,
+    display_mode: "full",
+    title: entry.title,
+    description: entry.description,
+    start_at: entry.start_at,
+    end_at: entry.end_at,
+    visibility_mode: entry.visibility_mode,
+    auto_notify_enabled: entry.auto_notify_enabled,
+    visible_role_ids: clone(entry.visible_role_ids),
+    created_by_viewer: entry.created_by_user_id === viewerId,
+    editable: true,
+  };
+}
+
+function buildScheduleTimeline(from: string, days: number, viewerId: string) {
+  const timeline: ScheduleTimelineDay[] = Array.from({ length: days }, (_, index) => {
+    const date = addJstDays(from, index);
+    return {
+      date,
+      events: state.schedule.events
+        .filter((entry) => overlapsDate(date, entry.start_at, entry.end_at))
+        .map((entry) => buildScheduleTimelineEvent(entry, viewerId)),
+    };
+  });
+
+  return {
+    from,
+    days,
+    timezone: "Asia/Tokyo",
+    timeline,
+  };
+}
+
+function buildScheduleBootstrap(url: URL) {
+  const me = getMockMeRecord();
+  const permissions = buildSchedulePermissions(me.role);
+  const from = url.searchParams.get("from") ?? isoToJstDate(nowIso()).slice(0, 7) + "-01";
+  const days = Number(url.searchParams.get("days") ?? "31");
+
+  return {
+    viewer: {
+      id: me.id,
+      discord_id: me.discordId,
+      discord_display_name: me.displayName,
+      avatar_url: me.avatarUrl,
+      role: me.role,
+      discord_role_ids: me.discordRoleIds,
+      permissions,
+      schedule_access: me.role !== "member",
+    },
+    timeline: buildScheduleTimeline(from, Number.isFinite(days) ? days : 31, me.id),
+    managed_roles: clone(state.schedule.managedRoles),
+    templates: clone(state.schedule.templates),
+    notifications: permissions.manage_notifications
+      ? {
+          webhook_url: state.schedule.webhookUrl,
+          rules: clone(state.schedule.rules),
+          placeholders: {
+            before_event: ["description", "duration", "end_at", "start_at", "title"],
+            daily_body: ["event_count", "events_list", "rule_name", "window_end", "window_start"],
+            daily_item: ["description", "duration", "end_at", "start_at", "title"],
+          },
+        }
+      : null,
   };
 }
 
@@ -483,26 +979,15 @@ function findClubById(clubId: string): MockClubRecord {
   return club;
 }
 
-function findEventById(eventId: string): PublicEventDetail {
-  const event = state.events.find((entry) => entry.id === eventId);
-  if (!event) {
-    throw { status: 404, code: "EVENT_NOT_FOUND", message: "Event not found" } satisfies MockApiErrorLike;
-  }
-
-  return clone(event);
-}
-
 function applyProfileUpdate(body: Record<string, unknown>) {
   const me = getMockMeRecord();
   const bioMarkdown = String(body.bio_markdown ?? me.profile.bio_markdown ?? "");
-  const shortBio = body.short_bio;
   const xId = body.x_id;
   const vrcId = body.vrc_id;
 
   me.profile = {
     ...me.profile,
     vrc_id: typeof vrcId === "string" ? vrcId : vrcId === null ? null : me.profile.vrc_id,
-    short_bio: typeof shortBio === "string" ? shortBio : shortBio === null ? null : me.profile.short_bio,
     x_id: typeof xId === "string" ? xId.replace(/^@/, "") : xId === null ? null : me.profile.x_id,
     bio_markdown: bioMarkdown,
     bio_html: htmlFromText(bioMarkdown),
@@ -542,6 +1027,200 @@ export async function resolveDevelopmentMock<T>(
     return clone(buildAuthMe()) as T;
   }
 
+  if (pathname === "/api/v1/internal/schedule/bootstrap" && method === "GET") {
+    return clone(buildScheduleBootstrap(url)) as T;
+  }
+
+  if (pathname === "/api/v1/internal/schedule/events" && method === "POST") {
+    const body = parseJsonBody(options.body);
+    const me = getMockMeRecord();
+    const event: MockScheduleEventRecord = {
+      id: nextId("schedule-event"),
+      created_by_user_id: me.id,
+      title: String(body.title ?? "Untitled entry"),
+      description: String(body.description ?? ""),
+      start_at: String(body.start_at ?? nowIso()),
+      end_at: String(body.end_at ?? nowIso()),
+      visibility_mode: String(body.visibility_mode ?? "public") as ScheduleVisibilityMode,
+      auto_notify_enabled: Boolean(body.auto_notify_enabled),
+      visible_role_ids: Array.isArray(body.visible_role_ids)
+        ? body.visible_role_ids.filter((value): value is string => typeof value === "string")
+        : [],
+    };
+    state.schedule.events.push(event);
+    return clone(buildScheduleTimelineEvent(event, me.id)) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/schedule\/events\/[^/]+$/) && method === "PATCH") {
+    const eventId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    const body = parseJsonBody(options.body);
+    const entry = state.schedule.events.find((item) => item.id === eventId);
+    const me = getMockMeRecord();
+    if (!entry) {
+      throw { status: 404, code: "SCHEDULE_EVENT_NOT_FOUND", message: "Schedule event not found" } satisfies MockApiErrorLike;
+    }
+    if (typeof body.title === "string") entry.title = body.title;
+    if (typeof body.description === "string") entry.description = body.description;
+    if (typeof body.start_at === "string") entry.start_at = body.start_at;
+    if (typeof body.end_at === "string") entry.end_at = body.end_at;
+    if (typeof body.visibility_mode === "string") entry.visibility_mode = body.visibility_mode as ScheduleVisibilityMode;
+    if (typeof body.auto_notify_enabled === "boolean") entry.auto_notify_enabled = body.auto_notify_enabled;
+    if (Array.isArray(body.visible_role_ids)) {
+      entry.visible_role_ids = body.visible_role_ids.filter((value): value is string => typeof value === "string");
+    }
+    return clone(buildScheduleTimelineEvent(entry, me.id)) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/schedule\/events\/[^/]+$/) && method === "DELETE") {
+    const eventId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    state.schedule.events = state.schedule.events.filter((item) => item.id !== eventId);
+    return undefined as T;
+  }
+
+  if (pathname === "/api/v1/internal/schedule/roles" && method === "POST") {
+    const body = parseJsonBody(options.body);
+    const role: ScheduleManagedRole = {
+      id: nextId("schedule-role"),
+      discord_role_id: String(body.discord_role_id ?? "role-new"),
+      display_name: String(body.display_name ?? "New role"),
+      description: String(body.description ?? ""),
+      can_manage_roles: Boolean(body.can_manage_roles),
+      can_manage_events: Boolean(body.can_manage_events),
+      can_manage_templates: Boolean(body.can_manage_templates),
+      can_manage_notifications: Boolean(body.can_manage_notifications),
+      can_view_restricted_events: body.can_view_restricted_events !== false,
+    };
+    state.schedule.managedRoles.push(role);
+    return clone(role) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/schedule\/roles\/[^/]+$/) && method === "PATCH") {
+    const roleId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    const body = parseJsonBody(options.body);
+    const role = state.schedule.managedRoles.find((item) => item.id === roleId);
+    if (!role) {
+      throw { status: 404, code: "SCHEDULE_ROLE_NOT_FOUND", message: "Managed role not found" } satisfies MockApiErrorLike;
+    }
+    if (typeof body.discord_role_id === "string") role.discord_role_id = body.discord_role_id;
+    if (typeof body.display_name === "string") role.display_name = body.display_name;
+    if (typeof body.description === "string") role.description = body.description;
+    if (typeof body.can_manage_roles === "boolean") role.can_manage_roles = body.can_manage_roles;
+    if (typeof body.can_manage_events === "boolean") role.can_manage_events = body.can_manage_events;
+    if (typeof body.can_manage_templates === "boolean") role.can_manage_templates = body.can_manage_templates;
+    if (typeof body.can_manage_notifications === "boolean") role.can_manage_notifications = body.can_manage_notifications;
+    if (typeof body.can_view_restricted_events === "boolean") role.can_view_restricted_events = body.can_view_restricted_events;
+    return clone(role) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/schedule\/roles\/[^/]+$/) && method === "DELETE") {
+    const roleId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    state.schedule.managedRoles = state.schedule.managedRoles.filter((item) => item.id !== roleId);
+    return undefined as T;
+  }
+
+  if (pathname === "/api/v1/internal/schedule/templates" && method === "POST") {
+    const body = parseJsonBody(options.body);
+    if (body.is_default === true) {
+      state.schedule.templates.forEach((template) => {
+        template.is_default = false;
+      });
+    }
+    const template: ScheduleTemplate = {
+      id: nextId("schedule-template"),
+      name: String(body.name ?? "New template"),
+      title: String(body.title ?? ""),
+      description: String(body.description ?? ""),
+      is_default: Boolean(body.is_default),
+    };
+    state.schedule.templates.push(template);
+    return clone(template) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/schedule\/templates\/[^/]+$/) && method === "PATCH") {
+    const templateId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    const body = parseJsonBody(options.body);
+    const template = state.schedule.templates.find((item) => item.id === templateId);
+    if (!template) {
+      throw { status: 404, code: "SCHEDULE_TEMPLATE_NOT_FOUND", message: "Template not found" } satisfies MockApiErrorLike;
+    }
+    if (body.is_default === true) {
+      state.schedule.templates.forEach((entry) => {
+        entry.is_default = false;
+      });
+    }
+    if (typeof body.name === "string") template.name = body.name;
+    if (typeof body.title === "string") template.title = body.title;
+    if (typeof body.description === "string") template.description = body.description;
+    if (typeof body.is_default === "boolean") template.is_default = body.is_default;
+    return clone(template) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/schedule\/templates\/[^/]+$/) && method === "DELETE") {
+    const templateId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    state.schedule.templates = state.schedule.templates.filter((item) => item.id !== templateId);
+    return undefined as T;
+  }
+
+  if (pathname === "/api/v1/internal/schedule/notifications/webhook" && method === "PUT") {
+    const body = parseJsonBody(options.body);
+    state.schedule.webhookUrl = String(body.webhook_url ?? "");
+    return clone(buildScheduleBootstrap(url).notifications) as T;
+  }
+
+  if (pathname === "/api/v1/internal/schedule/notifications/webhook" && method === "DELETE") {
+    state.schedule.webhookUrl = "";
+    return undefined as T;
+  }
+
+  if (pathname === "/api/v1/internal/schedule/notifications/rules" && method === "POST") {
+    const body = parseJsonBody(options.body);
+    const rule: ScheduleNotificationRule = {
+      id: nextId("schedule-rule"),
+      name: String(body.name ?? "New rule"),
+      enabled: body.enabled !== false,
+      schedule_type: String(body.schedule_type ?? "before_event") as ScheduleNotificationRule["schedule_type"],
+      offset_minutes: typeof body.offset_minutes === "number" ? body.offset_minutes : null,
+      time_of_day: typeof body.time_of_day === "string" ? body.time_of_day : null,
+      window_start_minutes: typeof body.window_start_minutes === "number" ? body.window_start_minutes : null,
+      window_end_minutes: typeof body.window_end_minutes === "number" ? body.window_end_minutes : null,
+      body_template: String(body.body_template ?? ""),
+      list_item_template: typeof body.list_item_template === "string" ? body.list_item_template : null,
+    };
+    state.schedule.rules.push(rule);
+    return clone(rule) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/schedule\/notifications\/rules\/[^/]+$/) && method === "PATCH") {
+    const ruleId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    const body = parseJsonBody(options.body);
+    const rule = state.schedule.rules.find((item) => item.id === ruleId);
+    if (!rule) {
+      throw { status: 404, code: "SCHEDULE_RULE_NOT_FOUND", message: "Notification rule not found" } satisfies MockApiErrorLike;
+    }
+    if (typeof body.name === "string") rule.name = body.name;
+    if (typeof body.enabled === "boolean") rule.enabled = body.enabled;
+    if (typeof body.schedule_type === "string") rule.schedule_type = body.schedule_type as ScheduleNotificationRule["schedule_type"];
+    if (typeof body.offset_minutes === "number" || body.offset_minutes === null) rule.offset_minutes = body.offset_minutes as number | null;
+    if (typeof body.time_of_day === "string" || body.time_of_day === null) rule.time_of_day = body.time_of_day as string | null;
+    if (typeof body.window_start_minutes === "number" || body.window_start_minutes === null) {
+      rule.window_start_minutes = body.window_start_minutes as number | null;
+    }
+    if (typeof body.window_end_minutes === "number" || body.window_end_minutes === null) {
+      rule.window_end_minutes = body.window_end_minutes as number | null;
+    }
+    if (typeof body.body_template === "string") rule.body_template = body.body_template;
+    if (typeof body.list_item_template === "string" || body.list_item_template === null) {
+      rule.list_item_template = body.list_item_template as string | null;
+    }
+    return clone(rule) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/schedule\/notifications\/rules\/[^/]+$/) && method === "DELETE") {
+    const ruleId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    state.schedule.rules = state.schedule.rules.filter((item) => item.id !== ruleId);
+    return undefined as T;
+  }
+
   if (pathname === "/api/v1/internal/me/profile" && method === "GET") {
     return clone(buildOwnProfile(getMockMeRecord().profile)) as T;
   }
@@ -561,16 +1240,6 @@ export async function resolveDevelopmentMock<T>(
   if (pathname.startsWith("/api/v1/public/members/") && method === "GET") {
     const discordId = decodeURIComponent(pathname.split("/").pop() ?? "");
     return clone(buildPublicMemberDetail(findMemberByDiscordId(discordId))) as T;
-  }
-
-  if (pathname === "/api/v1/public/events" && method === "GET") {
-    const { page, perPage } = getPageParams(url);
-    return paginate(state.events, page, perPage) as T;
-  }
-
-  if (pathname.startsWith("/api/v1/public/events/") && method === "GET") {
-    const eventId = decodeURIComponent(pathname.split("/").pop() ?? "");
-    return findEventById(eventId) as T;
   }
 
   if (pathname === "/api/v1/public/clubs" && method === "GET") {
@@ -609,14 +1278,97 @@ export async function resolveDevelopmentMock<T>(
     return paginate(filtered, page, perPage) as T;
   }
 
-  if (pathname.match(/^\/api\/v1\/internal\/admin\/users\/[^/]+\/role$/) && method === "PUT") {
+  if (pathname === "/api/v1/internal/admin/roles" && method === "GET") {
+    return clone(state.adminRoles) as T;
+  }
+
+  if (pathname === "/api/v1/internal/admin/role-policies" && method === "GET") {
+    return clone(state.adminSystemRoles) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/admin\/role-policies\/[^/]+$/) && method === "PATCH") {
+    const roleName = decodeURIComponent(pathname.split("/").pop() ?? "") as UserRole;
+    const body = parseJsonBody(options.body) as Partial<AdminSystemRolePolicyPayload>;
+    const role = state.adminSystemRoles.find((entry) => entry.role === roleName);
+    if (!role) {
+      throw { status: 404, code: "ADMIN_SYSTEM_ROLE_NOT_FOUND", message: "System role policy not found" } satisfies MockApiErrorLike;
+    }
+
+    role.can_view_dashboard = Boolean(body.can_view_dashboard ?? role.can_view_dashboard);
+    role.can_manage_users = Boolean(body.can_manage_users ?? role.can_manage_users);
+    role.can_manage_roles = Boolean(body.can_manage_roles ?? role.can_manage_roles);
+    role.can_manage_events = Boolean(body.can_manage_events ?? role.can_manage_events);
+    role.can_manage_tags = Boolean(body.can_manage_tags ?? role.can_manage_tags);
+    role.can_manage_reports = Boolean(body.can_manage_reports ?? role.can_manage_reports);
+    role.can_manage_galleries = Boolean(body.can_manage_galleries ?? role.can_manage_galleries);
+    role.can_manage_clubs = Boolean(body.can_manage_clubs ?? role.can_manage_clubs);
+    role.updated_at = nowIso();
+    return clone(role) as T;
+  }
+
+  if (pathname === "/api/v1/internal/admin/roles" && method === "POST") {
+    const body = parseJsonBody(options.body) as Partial<AdminRolePayload>;
+    const role: AdminManagedRole = {
+      id: nextId("admin-role"),
+      discord_role_id: String(body.discord_role_id ?? ""),
+      display_name: String(body.display_name ?? ""),
+      description: String(body.description ?? ""),
+      can_view_dashboard: Boolean(body.can_view_dashboard),
+      can_manage_users: Boolean(body.can_manage_users),
+      can_manage_roles: Boolean(body.can_manage_roles),
+      can_manage_events: Boolean(body.can_manage_events),
+      can_manage_tags: Boolean(body.can_manage_tags),
+      can_manage_reports: Boolean(body.can_manage_reports),
+      can_manage_galleries: Boolean(body.can_manage_galleries),
+      can_manage_clubs: Boolean(body.can_manage_clubs),
+      updated_at: nowIso(),
+    };
+    state.adminRoles.unshift(role);
+    return clone(role) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/admin\/roles\/[^/]+$/) && method === "PATCH") {
+    const roleId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    const body = parseJsonBody(options.body) as Partial<AdminRolePayload>;
+    const role = state.adminRoles.find((entry) => entry.id === roleId);
+    if (!role) {
+      throw { status: 404, code: "ADMIN_ROLE_NOT_FOUND", message: "Managed role not found" } satisfies MockApiErrorLike;
+    }
+
+    role.discord_role_id = String(body.discord_role_id ?? role.discord_role_id);
+    role.display_name = String(body.display_name ?? role.display_name);
+    role.description = String(body.description ?? role.description);
+    role.can_view_dashboard = Boolean(body.can_view_dashboard ?? role.can_view_dashboard);
+    role.can_manage_users = Boolean(body.can_manage_users ?? role.can_manage_users);
+    role.can_manage_roles = Boolean(body.can_manage_roles ?? role.can_manage_roles);
+    role.can_manage_events = Boolean(body.can_manage_events ?? role.can_manage_events);
+    role.can_manage_tags = Boolean(body.can_manage_tags ?? role.can_manage_tags);
+    role.can_manage_reports = Boolean(body.can_manage_reports ?? role.can_manage_reports);
+    role.can_manage_galleries = Boolean(body.can_manage_galleries ?? role.can_manage_galleries);
+    role.can_manage_clubs = Boolean(body.can_manage_clubs ?? role.can_manage_clubs);
+    role.updated_at = nowIso();
+
+    return clone(role) as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/admin\/roles\/[^/]+$/) && method === "DELETE") {
+    const roleId = decodeURIComponent(pathname.split("/").pop() ?? "");
+    const index = state.adminRoles.findIndex((entry) => entry.id === roleId);
+    if (index < 0) {
+      throw { status: 404, code: "ADMIN_ROLE_NOT_FOUND", message: "Managed role not found" } satisfies MockApiErrorLike;
+    }
+    state.adminRoles.splice(index, 1);
+    return undefined as T;
+  }
+
+  if (pathname.match(/^\/api\/v1\/internal\/admin\/users\/[^/]+\/role$/) && method === "PATCH") {
     const userId = decodeURIComponent(pathname.split("/")[6] ?? "");
     const body = parseJsonBody(options.body);
     const member = state.members.find((entry) => entry.id === userId);
     if (!member) {
       throw { status: 404, code: "USER_NOT_FOUND", message: "User not found" } satisfies MockApiErrorLike;
     }
-    member.role = String(body.new_role ?? member.role) as UserRole;
+    member.role = String(body.role ?? member.role) as UserRole;
     member.profile.updated_at = nowIso();
     return undefined as T;
   }
@@ -630,59 +1382,6 @@ export async function resolveDevelopmentMock<T>(
     }
     member.status = String(body.status ?? member.status) as UserStatus;
     member.profile.updated_at = nowIso();
-    return undefined as T;
-  }
-
-  if (pathname === "/api/v1/internal/admin/events" && method === "GET") {
-    const { page, perPage } = getPageParams(url);
-    return paginate(state.events, page, perPage) as T;
-  }
-
-  if (pathname === "/api/v1/internal/admin/events" && method === "POST") {
-    const body = parseJsonBody(options.body);
-    const me = getMockMeRecord();
-    const event: PublicEvent = {
-      id: nextId("event"),
-      title: String(body.title ?? "Untitled event"),
-      description_markdown: String(body.description_markdown ?? ""),
-      host_name: me.displayName,
-      host_user_id: me.discordId,
-      event_status: String(body.event_status ?? "draft") as PublicEvent["event_status"],
-      start_time: String(body.start_time ?? nowIso()),
-      end_time: typeof body.end_time === "string" ? body.end_time : null,
-      location: typeof body.location === "string" ? body.location : null,
-      tags: state.tags.filter((tag) => Array.isArray(body.tags) && body.tags.includes(tag.id)),
-      created_at: nowIso(),
-      updated_at: nowIso(),
-    };
-    state.events.unshift(event);
-    return clone(event) as T;
-  }
-
-  if (pathname.match(/^\/api\/v1\/internal\/admin\/events\/[^/]+$/) && method === "PUT") {
-    const eventId = decodeURIComponent(pathname.split("/").pop() ?? "");
-    const body = parseJsonBody(options.body);
-    const event = state.events.find((entry) => entry.id === eventId);
-    if (!event) {
-      throw { status: 404, code: "EVENT_NOT_FOUND", message: "Event not found" } satisfies MockApiErrorLike;
-    }
-    if (typeof body.title === "string") event.title = body.title;
-    if (typeof body.description_markdown === "string") event.description_markdown = body.description_markdown;
-    if (typeof body.start_time === "string") event.start_time = body.start_time;
-    if (typeof body.end_time === "string" || body.end_time === null) event.end_time = body.end_time as string | null;
-    if (typeof body.location === "string" || body.location === null) event.location = body.location as string | null;
-    if (typeof body.event_status === "string") event.event_status = body.event_status as PublicEvent["event_status"];
-    if (Array.isArray(body.tags)) {
-      const tagIds = body.tags.filter((value): value is string => typeof value === "string");
-      event.tags = state.tags.filter((tag) => tagIds.includes(tag.id));
-    }
-    event.updated_at = nowIso();
-    return clone(event) as T;
-  }
-
-  if (pathname.match(/^\/api\/v1\/internal\/admin\/events\/[^/]+$/) && method === "DELETE") {
-    const eventId = decodeURIComponent(pathname.split("/").pop() ?? "");
-    state.events = state.events.filter((entry) => entry.id !== eventId);
     return undefined as T;
   }
 

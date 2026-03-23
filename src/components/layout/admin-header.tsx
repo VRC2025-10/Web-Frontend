@@ -2,21 +2,24 @@
 
 import Link from "next/link";
 import { ArrowLeft, Menu, ShieldCheck } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { AdminNavPanel, getAdminSectionLabel } from "@/components/layout/admin-nav";
+import type { AdminPermissionSet } from "@/lib/api/types";
 
 interface AdminHeaderProps {
-  userRole: string;
+  permissions: AdminPermissionSet;
   roleLabel: string;
   backToSiteLabel: string;
 }
 
-export function AdminHeader({ userRole, roleLabel, backToSiteLabel }: AdminHeaderProps) {
+export function AdminHeader({ permissions, roleLabel, backToSiteLabel }: AdminHeaderProps) {
   const pathname = usePathname();
-  const sectionLabel = getAdminSectionLabel(pathname);
+  const tNav = useTranslations("admin.nav");
+  const sectionLabel = tNav(getAdminSectionLabel(pathname));
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -30,10 +33,10 @@ export function AdminHeader({ userRole, roleLabel, backToSiteLabel }: AdminHeade
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0">
               <SheetHeader className="border-b border-border px-4 py-4 text-left">
-                <SheetTitle>Admin</SheetTitle>
+                <SheetTitle>{tNav("title")}</SheetTitle>
               </SheetHeader>
               <div className="h-full p-4">
-                <AdminNavPanel userRole={userRole} pathname={pathname} />
+                <AdminNavPanel permissions={permissions} pathname={pathname} />
               </div>
             </SheetContent>
           </Sheet>
@@ -41,7 +44,7 @@ export function AdminHeader({ userRole, roleLabel, backToSiteLabel }: AdminHeade
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               <ShieldCheck className="h-4 w-4 text-primary" aria-hidden="true" />
-              Admin
+              {tNav("title")}
             </div>
             <p className="truncate text-lg font-bold md:text-xl">{sectionLabel}</p>
           </div>

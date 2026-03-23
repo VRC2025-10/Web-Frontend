@@ -53,7 +53,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
           Autoplay({ delay: 5000, stopOnInteraction: false }),
         ]}
         className="absolute inset-0"
-        aria-label="Featured events"
+        aria-label="Featured slides"
       >
         <CarouselContent className="ml-0 h-full">
           {slides.map((slide) => (

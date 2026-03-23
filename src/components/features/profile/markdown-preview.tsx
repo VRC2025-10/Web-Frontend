@@ -1,10 +1,9 @@
 "use client";
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Info } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { RichTextContent } from "@/components/shared/rich-text-content";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea, type TextareaProps } from "@/components/ui/textarea";
 
@@ -48,15 +47,11 @@ export function MarkdownPreview({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="prose prose-sm dark:prose-invert min-h-[150px] rounded-xl border border-border p-4">
-              {value ? (
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {value}
-                </ReactMarkdown>
-              ) : (
-                <p className="text-muted-foreground">Nothing to preview</p>
-              )}
-            </div>
+            <RichTextContent
+              markdown={value}
+              className="prose-sm min-h-[150px] rounded-xl border border-border p-4"
+              emptyFallback={<p className="text-muted-foreground">Nothing to preview</p>}
+            />
           </motion.div>
         </TabsContent>
       </Tabs>

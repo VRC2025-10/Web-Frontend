@@ -5,7 +5,6 @@ import type { ProfileFormValues } from "@/lib/validations/profile";
 interface MyProfileApi {
   nickname?: string | null;
   vrc_id?: string | null;
-  short_bio?: string | null;
   x_id?: string | null;
   bio_markdown?: string | null;
   bio_html?: string | null;
@@ -17,7 +16,6 @@ interface MyProfileApi {
 function normalizeMyProfile(profile: MyProfileApi): MyProfile {
   return {
     vrc_id: profile.vrc_id ?? null,
-    short_bio: profile.short_bio ?? null,
     x_id: profile.x_id ?? null,
     bio_markdown: profile.bio_markdown ?? "",
     bio_html: profile.bio_html ?? "",

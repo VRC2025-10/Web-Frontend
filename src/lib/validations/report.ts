@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const ReportFormSchema = z.object({
-  target_type: z.enum(["profile", "event"], {
+  target_type: z.enum(["profile"], {
     message: "Target type is required",
   }),
   target_id: z.string().uuid("Invalid target ID"),

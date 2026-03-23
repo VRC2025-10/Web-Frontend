@@ -1,10 +1,12 @@
 import { getAdminUsers } from "@/lib/api/admin";
+import { requireMe } from "@/lib/api/auth";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Pagination } from "@/components/shared/pagination";
 import { UserActionsTable } from "@/components/features/admin/user-actions-table";
 import type { AdminUser, PaginatedResponse } from "@/lib/api/types";
 import type { Metadata } from "next";
+import { forbidden } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "User Management | Admin",
@@ -14,6 +16,10 @@ export const metadata: Metadata = {
 export default async function AdminUsersPage(props: { searchParams: Promise<{ page?: string; role?: string }> }) {
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
+  const me = await requireMe();
+  if (!me.admin_permissions.manage_users) {
+    forbidden();
+  }
 
   let data: PaginatedResponse<AdminUser>;
   try {

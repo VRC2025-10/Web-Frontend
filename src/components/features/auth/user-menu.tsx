@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, User, Settings, Shield } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { CalendarDays, LogOut, User, Settings, Shield } from "lucide-react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -15,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { logoutAction } from "@/actions/auth";
 import type { AuthMe } from "@/lib/api/types";
+import { formatUserRoleLabel } from "@/lib/role-labels";
 
 interface UserMenuProps {
   user: AuthMe;
@@ -24,11 +26,10 @@ function getProfileHref(user: AuthMe): string {
   return user.profile?.is_public ? `/members/${user.discord_id}` : "/settings/profile";
 }
 
-function isAdminRole(role: string) {
-  return role === "staff" || role === "admin" || role === "super_admin";
-}
-
 export function UserMenu({ user }: UserMenuProps) {
+  const locale = useLocale();
+  const t = useTranslations("nav");
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -46,24 +47,33 @@ export function UserMenu({ user }: UserMenuProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuLabel>{user.discord_username}</DropdownMenuLabel>
+        <DropdownMenuLabel className="pt-0 text-xs font-normal text-muted-foreground">{formatUserRoleLabel(user.role, locale)}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href={getProfileHref(user)}>
             <User className="mr-2 h-4 w-4" />
-            Profile
+            {t("profile")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/settings/profile">
             <Settings className="mr-2 h-4 w-4" />
-            Settings
+            {t("settings")}
           </Link>
         </DropdownMenuItem>
-        {isAdminRole(user.role) && (
+        {user.schedule_access && (
+          <DropdownMenuItem asChild>
+            <Link href="/schedule">
+              <CalendarDays className="mr-2 h-4 w-4" />
+              {t("schedule")}
+            </Link>
+          </DropdownMenuItem>
+        )}
+        {user.admin_access && (
           <DropdownMenuItem asChild>
             <Link href="/admin">
               <Shield className="mr-2 h-4 w-4" />
-              Admin
+              {t("admin")}
             </Link>
           </DropdownMenuItem>
         )}
@@ -72,7 +82,7 @@ export function UserMenu({ user }: UserMenuProps) {
           <form action={logoutAction}>
             <button type="submit" className="flex w-full items-center">
               <LogOut className="mr-2 h-4 w-4" />
-              Logout
+              {t("logout")}
             </button>
           </form>
         </DropdownMenuItem>

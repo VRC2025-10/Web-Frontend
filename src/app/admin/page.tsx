@@ -1,11 +1,12 @@
 import { getAdminStats } from "@/lib/api/admin";
+import { requireMe } from "@/lib/api/auth";
 import { StatCard } from "@/components/features/admin/stat-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import {
   Users,
-  Calendar,
+  CalendarDays,
   Image as ImageIcon,
   Flag,
   ArrowRight,
@@ -16,15 +17,27 @@ import {
 import { getLocale, getTranslations } from "next-intl/server";
 import type { AdminStats } from "@/lib/api/types";
 import type { Metadata } from "next";
+import { forbidden } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Dashboard | Admin",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("admin.dashboard");
+
+  return {
+    title: t("title"),
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function AdminDashboardPage() {
-  const locale = await getLocale();
-  const t = await getTranslations("admin.dashboard");
+  const [locale, t, me] = await Promise.all([
+    getLocale(),
+    getTranslations("admin.dashboard"),
+    requireMe(),
+  ]);
+  if (!me.admin_permissions.view_dashboard) {
+    forbidden();
+  }
+
   let stats: AdminStats;
   try {
     stats = await getAdminStats();
@@ -49,13 +62,6 @@ export default async function AdminDashboardPage() {
       hint: t("hints.totalUsers"),
     },
     {
-      icon: Calendar,
-      label: t("totalEvents"),
-      value: numberFormatter.format(stats.total_events),
-      hint: t("hints.totalEvents"),
-      iconClassName: "bg-accent/12 text-accent",
-    },
-    {
       icon: Building2,
       label: t("totalClubs"),
       value: numberFormatter.format(stats.total_clubs),
@@ -78,13 +84,15 @@ export default async function AdminDashboardPage() {
       title: t("actions.membersTitle"),
       description: t("actions.membersDescription"),
       stat: numberFormatter.format(stats.total_users),
+      visible: me.admin_permissions.manage_users,
     },
     {
-      href: "/admin/events",
-      icon: Calendar,
-      title: t("actions.eventsTitle"),
-      description: t("actions.eventsDescription"),
-      stat: numberFormatter.format(stats.total_events),
+      href: "/schedule",
+      icon: CalendarDays,
+      title: t("actions.scheduleTitle"),
+      description: t("actions.scheduleDescription"),
+      stat: t("actions.scheduleStat"),
+      visible: me.schedule_access,
     },
     {
       href: "/admin/galleries",
@@ -92,6 +100,7 @@ export default async function AdminDashboardPage() {
       title: t("actions.galleryTitle"),
       description: t("actions.galleryDescription"),
       stat: numberFormatter.format(stats.total_clubs),
+      visible: me.admin_permissions.manage_galleries,
     },
     {
       href: "/admin/reports",
@@ -99,8 +108,17 @@ export default async function AdminDashboardPage() {
       title: t("actions.reportsTitle"),
       description: t("actions.reportsDescription"),
       stat: numberFormatter.format(stats.pending_reports),
+      visible: me.admin_permissions.manage_reports,
     },
-  ] as const;
+    {
+      href: "/admin/roles",
+      icon: ShieldAlert,
+      title: t("actions.rolesTitle"),
+      description: t("actions.rolesDescription"),
+      stat: me.admin_permissions.manage_roles ? t("actions.rolesStatActive") : t("actions.rolesStatLocked"),
+      visible: me.admin_permissions.manage_roles,
+    },
+  ].filter((item) => item.visible);
 
   return (
     <div className="space-y-6">
@@ -185,10 +203,6 @@ export default async function AdminDashboardPage() {
                   ? t("pulsePrimaryAlert", { count: numberFormatter.format(stats.pending_reports) })
                   : t("pulsePrimaryCalm")}
               </p>
-            </div>
-            <div className="rounded-xl border border-border bg-background p-4">
-              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{t("pulseSecondaryLabel")}</div>
-              <p className="mt-2 text-sm leading-6 text-foreground/80">{t("pulseSecondaryText", { count: numberFormatter.format(stats.total_events) })}</p>
             </div>
             <div className="rounded-xl border border-border bg-background p-4">
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{t("pulseTertiaryLabel")}</div>

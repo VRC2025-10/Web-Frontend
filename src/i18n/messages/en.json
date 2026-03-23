@@ -7,6 +7,7 @@
     "back": "Back",
     "backToHome": "Back to Home",
     "save": "Save",
+    "edit": "Edit",
     "cancel": "Cancel",
     "delete": "Delete",
     "confirm": "Confirm",
@@ -18,10 +19,11 @@
   },
   "nav": {
     "home": "Home",
-    "events": "Events",
     "members": "Members",
     "clubs": "Clubs",
+    "schedule": "Schedule",
     "admin": "Admin",
+    "language": "Language",
     "settings": "Settings",
     "profile": "Profile",
     "login": "Login",
@@ -29,6 +31,7 @@
     "mobileMenu": "Menu"
   },
   "theme": {
+    "label": "Theme",
     "light": "Light mode",
     "dark": "Dark mode",
     "system": "System"
@@ -80,14 +83,9 @@
       "title": "VRC 10月同期会",
       "subtitle": "A community for VRC 10月同期会 members",
       "cta": {
-        "events": "View Events",
+        "clubs": "Browse Clubs",
         "members": "Meet Members"
       }
-    },
-    "events": {
-      "title": "Upcoming Events",
-      "viewAll": "View all →",
-      "empty": "No upcoming events"
     },
     "members": {
       "title": "Recent Members",
@@ -209,6 +207,26 @@
   },
   "admin": {
     "title": "Admin",
+    "roleNames": {
+      "member": "member",
+      "staff": "staff",
+      "admin": "admin",
+      "super_admin": "super admin"
+    },
+    "nav": {
+      "title": "Admin",
+      "subtitle": "Control panel",
+      "ariaLabel": "Admin navigation",
+      "backToSite": "Back to site",
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "roles": "Roles",
+      "galleries": "Galleries",
+      "events": "Events",
+      "tags": "Tags",
+      "reports": "Reports",
+      "clubs": "Clubs"
+    },
     "dashboard": {
       "title": "Dashboard",
       "totalUsers": "Total Members",
@@ -242,18 +260,103 @@
         "membersDescription": "Review roles, account status, and profile access.",
         "eventsTitle": "Manage events",
         "eventsDescription": "Update schedules, descriptions, and publication status.",
+        "scheduleTitle": "Schedule",
+        "scheduleDescription": "Open the internal schedule board to adjust staff entries, restricted slots, and notification rules.",
+        "scheduleStat": "internal board",
         "galleryTitle": "Manage galleries",
         "galleryDescription": "Organize community-wide and club-specific photos.",
         "reportsTitle": "Manage reports",
-        "reportsDescription": "Review and resolve pending reports."
+        "reportsDescription": "Review and resolve pending reports.",
+        "rolesTitle": "Role policies",
+        "rolesDescription": "Tune built-in role permissions and Discord-linked dashboard roles.",
+        "rolesStatActive": "available",
+        "rolesStatLocked": "locked"
       },
       "moodboardTitle": "Checks",
       "moodboardFirstLabel": "Members",
       "moodboardFirstText": "There are {count} registered members. Keep that scale in mind before changing public-facing pages.",
-      "moodboardSecondLabel": "Events and photos",
-      "moodboardSecondText": "Verify dates, publication status, and gallery scope before updating content.",
+      "moodboardSecondLabel": "Photos",
+      "moodboardSecondText": "Verify gallery scope before updating content.",
       "moodboardThirdLabel": "Reports",
       "moodboardThirdText": "There are {count} pending reports. Treat them as the highest priority when the count is not zero."
+    },
+    "roles": {
+      "page": {
+        "title": "Role policies",
+        "description": "Manage fixed role permissions and dashboard roles linked to Discord role IDs."
+      },
+      "roleNames": {
+        "member": "member",
+        "staff": "staff",
+        "admin": "admin"
+      },
+      "roleDescriptions": {
+        "member": "Baseline user role. You can selectively grant dashboard access from here.",
+        "staff": "Default operations role. Best for review-focused permissions.",
+        "admin": "Higher operations role. You can tune every admin capability except super-admin."
+      },
+      "system": {
+        "eyebrow": "Fixed roles",
+        "title": "Built-in role permissions",
+        "description": "Edit the default permissions for member, staff, and admin. super-admin always keeps every permission.",
+        "editingLabel": "Editing:",
+        "cancel": "Cancel"
+      },
+      "managed": {
+        "eyebrow": "Discord-linked roles",
+        "title": "Managed dashboard roles",
+        "description": "Map Discord role IDs to dashboard permissions. super-admin stays outside this table.",
+        "empty": "No managed roles yet. Add the Discord roles that should unlock dashboard access.",
+        "placeholders": {
+          "displayName": "Display name",
+          "discordRoleId": "Discord role ID",
+          "description": "Describe who should receive this role and why."
+        }
+      },
+      "permissions": {
+        "can_view_dashboard": {
+          "label": "View dashboard",
+          "hint": "Allow access to the admin overview and stats."
+        },
+        "can_manage_users": {
+          "label": "Manage users",
+          "hint": "Change user status and inspect member records."
+        },
+        "can_manage_roles": {
+          "label": "Manage roles",
+          "hint": "Edit role policies and change app roles except super-admin."
+        },
+        "can_manage_events": {
+          "label": "Manage events",
+          "hint": "Use event creation, update, and publishing tools."
+        },
+        "can_manage_tags": {
+          "label": "Manage tags",
+          "hint": "Create and maintain event tags."
+        },
+        "can_manage_reports": {
+          "label": "Manage reports",
+          "hint": "Review moderation reports and change their status."
+        },
+        "can_manage_galleries": {
+          "label": "Manage galleries",
+          "hint": "Moderate uploads and gallery assets."
+        },
+        "can_manage_clubs": {
+          "label": "Manage clubs",
+          "hint": "Create clubs and update club records."
+        }
+      },
+      "actions": {
+        "createNew": "Create new",
+        "editSystem": "Edit fixed role",
+        "saveSystem": "Save fixed role permissions",
+        "saveManaged": "Save role",
+        "addManaged": "Add role",
+        "editManaged": "Edit",
+        "deleteManaged": "Delete",
+        "saving": "Saving..."
+      }
     },
     "users": {
       "title": "User Management",
@@ -472,6 +575,209 @@
       "deleted": "Club deleted successfully"
     },
     "backToSite": "Back to site"
+  },
+  "schedule": {
+    "meta": {
+      "title": "Schedule",
+      "description": "Internal schedule board for staff operations"
+    },
+    "hero": {
+      "eyebrow": "Internal schedule",
+      "description": "Manage public and restricted entries in one board, with templates and notification rules alongside the timeline.",
+      "signedInAs": "Signed in as {name}",
+      "role": "Role: {role}",
+      "manageEvents": "Can manage events",
+      "restrictedAccess": "Can view restricted entries",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "currentMonth": "Current month",
+      "newEntry": "New entry"
+    },
+    "stats": {
+      "managedRoles": "Managed roles",
+      "templates": "Templates",
+      "rules": "Rules"
+    },
+    "tabs": {
+      "timeline": "Timeline",
+      "roles": "Roles",
+      "templates": "Templates",
+      "notifications": "Notifications"
+    },
+    "toast": {
+      "eventCreated": "Schedule entry created",
+      "eventUpdated": "Schedule entry updated",
+      "eventDeleted": "Schedule entry deleted",
+      "roleCreated": "Role policy created",
+      "roleUpdated": "Role policy updated",
+      "roleDeleted": "Role policy deleted",
+      "templateCreated": "Template created",
+      "templateUpdated": "Template updated",
+      "templateDeleted": "Template deleted",
+      "webhookSaved": "Webhook saved",
+      "webhookDeleted": "Webhook deleted",
+      "ruleCreated": "Notification rule created",
+      "ruleUpdated": "Notification rule updated",
+      "ruleDeleted": "Notification rule deleted"
+    },
+    "timeline": {
+      "eyebrow": "Shared timeline",
+      "title": "Click or drag to create a time slot",
+      "description": "Click an empty lane to create a 30-minute slot, or drag to select a longer range before opening the editor.",
+      "legendClick": "Click to add 30 min",
+      "legendDrag": "Drag to select a range",
+      "legendMasked": "Restricted entries show occupancy only",
+      "date": "Date",
+      "today": "Today",
+      "editable": "Editable",
+      "masked": "Hidden",
+      "ariaOpenEvent": "Open schedule entry"
+    },
+    "editor": {
+      "eyebrow": "Timeline editor",
+      "createTitle": "Create schedule entry",
+      "editTitle": "Edit schedule entry",
+      "close": "Close",
+      "rangeHint": "The selected range from the timeline is prefilled here so you can fine tune the details.",
+      "template": "Template",
+      "noTemplate": "No template",
+      "defaultTemplate": "Default: {name}",
+      "title": "Title",
+      "description": "Description",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "titlePlaceholder": "Recording, rehearsal, collab stream, handoff",
+      "descriptionPlaceholder": "Add any detail that should appear in the entry and notifications.",
+      "visibility": {
+        "public": "Public",
+        "restricted": "Restricted",
+        "help": "Restricted entries are fully visible only to the selected Discord roles."
+      },
+      "restrictedRoles": "Discord roles allowed to view the full entry",
+      "autoNotifyTitle": "Enable automatic notifications",
+      "autoNotifyDescription": "Only enabled entries are eligible for scheduled Discord webhook notices.",
+      "delete": "Delete entry",
+      "create": "Create entry",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "confirmTemplate": "Replace the current title and description with the selected template?",
+      "confirmDelete": "Delete this schedule entry?",
+      "errors": {
+        "restrictedRoles": "Select at least one role that can view the restricted event.",
+        "timeOrder": "The end time must be later than the start time.",
+        "save": "Failed to save the event.",
+        "delete": "Failed to delete the event."
+      }
+    },
+    "roles": {
+      "eyebrow": "Role policies",
+      "title": "Managed Discord roles",
+      "description": "Define which Discord roles can view restricted entries and manage events, templates, or notifications.",
+      "createNew": "Back to create",
+      "placeholders": {
+        "displayName": "Display name",
+        "discordRoleId": "Discord role ID",
+        "description": "Explain what this role can operate."
+      },
+      "permissions": {
+        "restricted": "View restricted entry details",
+        "events": "Manage entries",
+        "templates": "Manage templates",
+        "notifications": "Manage notifications",
+        "roles": "Manage role policies"
+      },
+      "actions": {
+        "add": "Add role",
+        "save": "Save role",
+        "saving": "Saving…"
+      },
+      "badges": {
+        "restricted": "Restricted view",
+        "events": "Events",
+        "templates": "Templates",
+        "notifications": "Notifications",
+        "roles": "Roles"
+      },
+      "confirmDelete": "Delete this role policy?",
+      "empty": "No managed roles yet. Add the Discord roles that should operate the schedule board.",
+      "errors": {
+        "save": "Failed to save the managed role.",
+        "delete": "Failed to delete the managed role."
+      }
+    },
+    "templates": {
+      "eyebrow": "Templates",
+      "title": "Reusable titles and descriptions",
+      "description": "Save common copy blocks so new entries are faster to create and more consistent.",
+      "createNew": "Back to create",
+      "placeholders": {
+        "name": "Template name",
+        "title": "Title applied when selected",
+        "description": "Description applied when selected"
+      },
+      "defaultLabel": "Make this the default template",
+      "defaultBadge": "Default",
+      "titleLabel": "Title",
+      "actions": {
+        "add": "Add template",
+        "save": "Save template",
+        "saving": "Saving…"
+      },
+      "confirmDelete": "Delete this template?",
+      "empty": "No templates yet. Add reusable copy for common entry types.",
+      "errors": {
+        "save": "Failed to save the template.",
+        "delete": "Failed to delete the template."
+      }
+    },
+    "notifications": {
+      "eyebrow": "Notifications",
+      "title": "Discord webhook delivery rules",
+      "description": "Use one webhook endpoint and define multiple lead-time or daily summary rules.",
+      "createNew": "Back to create",
+      "webhookTitle": "Webhook URL",
+      "webhookDescription": "Use a single Discord webhook endpoint for automated schedule notifications.",
+      "show": "Show",
+      "hide": "Hide",
+      "saveWebhook": "Save webhook",
+      "deleteWebhook": "Delete webhook",
+      "placeholdersTitle": "Available placeholders",
+      "placeholdersBefore": "Before event",
+      "placeholdersDailyBody": "Daily summary body",
+      "placeholdersDailyItem": "Daily summary item",
+      "ruleName": "Notification rule name",
+      "scheduleType": "Schedule type",
+      "scheduleTypes": {
+        "before_event": "Before event",
+        "daily_at": "Daily summary"
+      },
+      "enabled": "Enable this rule",
+      "offsetMinutes": "Minutes before the entry starts",
+      "timeOfDay": "Send time",
+      "windowStart": "Window start minute",
+      "windowEnd": "Window end minute",
+      "bodyTemplate": "Body template",
+      "listItemTemplate": "List item template",
+      "actions": {
+        "add": "Add rule",
+        "save": "Save rule",
+        "saving": "Saving…"
+      },
+      "paused": "Paused",
+      "beforeSummary": "Send {minutes} minutes before the entry starts.",
+      "dailySummary": "Send every day at {time} for entries between {start} and {end} minutes.",
+      "confirmDeleteWebhook": "Delete the saved webhook?",
+      "confirmDeleteRule": "Delete this notification rule?",
+      "empty": "No notification rules yet. Create one for lead time reminders or daily summaries.",
+      "errors": {
+        "saveWebhook": "Failed to save the webhook.",
+        "deleteWebhook": "Failed to delete the webhook.",
+        "saveRule": "Failed to save the notification rule.",
+        "deleteRule": "Failed to delete the notification rule."
+      }
+    }
   },
   "errors": {
     "notFound": {

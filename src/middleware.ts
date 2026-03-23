@@ -28,6 +28,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  if (pathname.startsWith("/schedule") && !sessionId) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect_to", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
   if (pathname.startsWith("/admin") && !sessionId) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect_to", pathname);
@@ -38,5 +44,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/settings/:path*", "/admin/:path*"],
+  matcher: ["/login", "/settings/:path*", "/schedule/:path*", "/admin/:path*"],
 };

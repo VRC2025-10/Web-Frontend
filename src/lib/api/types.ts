@@ -12,7 +12,7 @@ export interface ApiErrorResponse {
   details?: Record<string, string[]>;
 }
 
-/** Tag attached to events */
+/** Tag */
 export interface Tag {
   id: string;
   name: string;
@@ -45,7 +45,6 @@ export interface PublicMemberDetail {
 /** Authenticated user's own profile (editable) */
 export interface MyProfile {
   vrc_id: string | null;
-  short_bio?: string | null;
   x_id: string | null;
   bio_markdown: string;
   bio_html: string;
@@ -60,6 +59,9 @@ export interface AuthMe {
   discord_username: string;
   avatar_url: string | null;
   role: UserRole;
+  admin_access: boolean;
+  admin_permissions: AdminPermissionSet;
+  schedule_access: boolean;
   profile: {
     vrc_id: string | null;
     x_id: string | null;
@@ -75,30 +77,15 @@ export type LoginErrorCode =
   | "discord_error"
   | "suspended";
 
-/** Event in public listing */
-export interface PublicEvent {
-  id: string;
-  title: string;
-  description_markdown: string;
-  host_name: string;
-  host_user_id: string | null;
-  event_status: EventStatus;
-  start_time: string;
-  end_time: string | null;
-  location: string | null;
-  tags: Tag[];
-  created_at: string;
-  updated_at: string;
-}
-
-/** Full event detail (public) */
-export interface PublicEventDetail extends PublicEvent {}
-
-/** Event with extended info for authenticated users */
-export interface InternalEvent extends PublicEvent {
-  extended_info: {
-    sync_status: string;
-  };
+export interface AdminPermissionSet {
+  view_dashboard: boolean;
+  manage_users: boolean;
+  manage_roles: boolean;
+  manage_events: boolean;
+  manage_tags: boolean;
+  manage_reports: boolean;
+  manage_galleries: boolean;
+  manage_clubs: boolean;
 }
 
 /** Club in public listing */
@@ -190,11 +177,62 @@ export interface AdminStats {
   pending_reports: number;
 }
 
+export interface AdminManagedRole {
+  id: string;
+  discord_role_id: string;
+  display_name: string;
+  description: string;
+  can_view_dashboard: boolean;
+  can_manage_users: boolean;
+  can_manage_roles: boolean;
+  can_manage_events: boolean;
+  can_manage_tags: boolean;
+  can_manage_reports: boolean;
+  can_manage_galleries: boolean;
+  can_manage_clubs: boolean;
+  updated_at: string;
+}
+
+export interface AdminSystemRolePolicy {
+  role: UserRole;
+  can_view_dashboard: boolean;
+  can_manage_users: boolean;
+  can_manage_roles: boolean;
+  can_manage_events: boolean;
+  can_manage_tags: boolean;
+  can_manage_reports: boolean;
+  can_manage_galleries: boolean;
+  can_manage_clubs: boolean;
+  updated_at: string;
+}
+
+export interface AdminRolePayload {
+  discord_role_id: string;
+  display_name: string;
+  description: string;
+  can_view_dashboard: boolean;
+  can_manage_users: boolean;
+  can_manage_roles: boolean;
+  can_manage_events: boolean;
+  can_manage_tags: boolean;
+  can_manage_reports: boolean;
+  can_manage_galleries: boolean;
+  can_manage_clubs: boolean;
+}
+
+export interface AdminSystemRolePolicyPayload {
+  can_view_dashboard: boolean;
+  can_manage_users: boolean;
+  can_manage_roles: boolean;
+  can_manage_events: boolean;
+  can_manage_tags: boolean;
+  can_manage_reports: boolean;
+  can_manage_galleries: boolean;
+  can_manage_clubs: boolean;
+}
+
 /** User role hierarchy: member < staff < admin < super_admin */
 export type UserRole = "member" | "staff" | "admin" | "super_admin";
-
-/** Event publication status */
-export type EventStatus = "draft" | "published" | "cancelled" | "archived";
 
 /** Report moderation status */
 export type ReportStatus = "pending" | "resolved" | "dismissed";
@@ -203,7 +241,149 @@ export type ReportStatus = "pending" | "resolved" | "dismissed";
 export type GalleryImageStatus = "pending" | "approved" | "rejected";
 
 /** Report target entity type */
-export type ReportTargetType = "profile" | "event";
+export type ReportTargetType = "profile";
 
 /** User account status */
 export type UserStatus = "active" | "suspended";
+
+export interface SchedulePermissionSet {
+  manage_roles: boolean;
+  manage_events: boolean;
+  manage_templates: boolean;
+  manage_notifications: boolean;
+  view_restricted_events: boolean;
+}
+
+export interface ScheduleViewer {
+  id: string;
+  discord_id: string;
+  discord_display_name: string;
+  avatar_url: string | null;
+  role: UserRole;
+  discord_role_ids: string[];
+  permissions: SchedulePermissionSet;
+  schedule_access: boolean;
+}
+
+export interface ScheduleManagedRole {
+  id: string;
+  discord_role_id: string;
+  display_name: string;
+  description: string;
+  can_manage_roles: boolean;
+  can_manage_events: boolean;
+  can_manage_templates: boolean;
+  can_manage_notifications: boolean;
+  can_view_restricted_events: boolean;
+}
+
+export interface ScheduleRolePayload {
+  discord_role_id: string;
+  display_name: string;
+  description: string;
+  can_manage_roles: boolean;
+  can_manage_events: boolean;
+  can_manage_templates: boolean;
+  can_manage_notifications: boolean;
+  can_view_restricted_events: boolean;
+}
+
+export interface ScheduleTemplate {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  is_default: boolean;
+}
+
+export interface ScheduleTemplatePayload {
+  name: string;
+  title: string;
+  description: string;
+  is_default: boolean;
+}
+
+export type ScheduleVisibilityMode = "public" | "restricted";
+
+export interface ScheduleTimelineEvent {
+  id: string | null;
+  display_mode: "full" | "masked";
+  title: string | null;
+  description: string | null;
+  start_at: string;
+  end_at: string;
+  visibility_mode: ScheduleVisibilityMode;
+  auto_notify_enabled: boolean | null;
+  visible_role_ids: string[];
+  created_by_viewer: boolean;
+  editable: boolean;
+}
+
+export interface ScheduleTimelineDay {
+  date: string;
+  events: ScheduleTimelineEvent[];
+}
+
+export interface ScheduleTimeline {
+  from: string;
+  days: number;
+  timezone: string;
+  timeline: ScheduleTimelineDay[];
+}
+
+export interface ScheduleEventPayload {
+  title: string;
+  description: string;
+  start_at: string;
+  end_at: string;
+  visibility_mode: ScheduleVisibilityMode;
+  auto_notify_enabled: boolean;
+  visible_role_ids: string[];
+}
+
+export type ScheduleNotificationScheduleType = "before_event" | "daily_at";
+
+export interface ScheduleNotificationRule {
+  id: string;
+  name: string;
+  enabled: boolean;
+  schedule_type: ScheduleNotificationScheduleType;
+  offset_minutes: number | null;
+  time_of_day: string | null;
+  window_start_minutes: number | null;
+  window_end_minutes: number | null;
+  body_template: string;
+  list_item_template: string | null;
+}
+
+export interface ScheduleNotificationRulePayload {
+  name: string;
+  enabled: boolean;
+  schedule_type: ScheduleNotificationScheduleType;
+  offset_minutes?: number;
+  time_of_day?: string;
+  window_start_minutes?: number;
+  window_end_minutes?: number;
+  body_template: string;
+  list_item_template?: string;
+}
+
+export interface ScheduleNotificationPlaceholders {
+  before_event: string[];
+  daily_body: string[];
+  daily_item: string[];
+}
+
+export interface ScheduleNotificationState {
+  webhook_url: string;
+  rules: ScheduleNotificationRule[];
+  placeholders: ScheduleNotificationPlaceholders;
+}
+
+export interface ScheduleBootstrapResponse {
+  viewer: ScheduleViewer;
+  timeline: ScheduleTimeline;
+  managed_roles: ScheduleManagedRole[];
+  templates: ScheduleTemplate[];
+  notifications: ScheduleNotificationState | null;
+}
