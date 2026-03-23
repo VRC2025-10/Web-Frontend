@@ -12,7 +12,7 @@ export interface ApiErrorResponse {
   details?: Record<string, string[]>;
 }
 
-/** Tag attached to events */
+/** Tag */
 export interface Tag {
   id: string;
   name: string;
