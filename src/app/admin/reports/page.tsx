@@ -1,4 +1,5 @@
 import { getAdminReports } from "@/lib/api/admin";
+import { requireMe } from "@/lib/api/auth";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -7,6 +8,7 @@ import { ReportActionsTable } from "@/components/features/admin/report-actions-t
 import { Flag } from "lucide-react";
 import type { AdminReport, PaginatedResponse } from "@/lib/api/types";
 import type { Metadata } from "next";
+import { forbidden } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Report Management | Admin",
@@ -16,6 +18,10 @@ export const metadata: Metadata = {
 export default async function AdminReportsPage(props: { searchParams: Promise<{ page?: string }> }) {
   const searchParams = await props.searchParams;
   const page = Number(searchParams.page) || 1;
+  const me = await requireMe();
+  if (!me.admin_permissions.manage_reports) {
+    forbidden();
+  }
 
   let data: PaginatedResponse<AdminReport>;
   try {
