@@ -5,6 +5,10 @@ import {
 } from "./admin-normalizers";
 import type {
   PaginatedResponse,
+  AdminManagedRole,
+  AdminRolePayload,
+  AdminSystemRolePolicy,
+  AdminSystemRolePolicyPayload,
   AdminUser,
   AdminReport,
   AdminStats,
@@ -14,7 +18,6 @@ import type {
   GalleryTargetType,
   AdminGalleryImage,
   PublicClub,
-  PublicEvent,
   Tag,
   ReportStatus,
 } from "./types";
@@ -59,8 +62,62 @@ export async function updateUserRole(
   newRole: UserRole
 ): Promise<void> {
   return apiClient(`/api/v1/internal/admin/users/${encodeURIComponent(userId)}/role`, {
-    method: "PUT",
-    body: JSON.stringify({ new_role: newRole }),
+    method: "PATCH",
+    body: JSON.stringify({ role: newRole }),
+    cache: "no-store",
+    withCookies: true,
+  });
+}
+
+export async function getAdminRoles(): Promise<AdminManagedRole[]> {
+  return apiClient("/api/v1/internal/admin/roles", {
+    cache: "no-store",
+    withCookies: true,
+    timeout: 15_000,
+  });
+}
+
+export async function getAdminSystemRolePolicies(): Promise<AdminSystemRolePolicy[]> {
+  return apiClient("/api/v1/internal/admin/role-policies", {
+    cache: "no-store",
+    withCookies: true,
+    timeout: 15_000,
+  });
+}
+
+export async function createAdminRole(payload: AdminRolePayload): Promise<AdminManagedRole> {
+  return apiClient("/api/v1/internal/admin/roles", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    cache: "no-store",
+    withCookies: true,
+  });
+}
+
+export async function updateAdminRole(roleId: string, payload: AdminRolePayload): Promise<AdminManagedRole> {
+  return apiClient(`/api/v1/internal/admin/roles/${encodeURIComponent(roleId)}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+    cache: "no-store",
+    withCookies: true,
+  });
+}
+
+export async function deleteAdminRole(roleId: string): Promise<void> {
+  return apiClient(`/api/v1/internal/admin/roles/${encodeURIComponent(roleId)}`, {
+    method: "DELETE",
+    cache: "no-store",
+    withCookies: true,
+  });
+}
+
+export async function updateAdminSystemRolePolicy(
+  role: UserRole,
+  payload: AdminSystemRolePolicyPayload
+): Promise<AdminSystemRolePolicy> {
+  return apiClient(`/api/v1/internal/admin/role-policies/${encodeURIComponent(role)}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
     cache: "no-store",
     withCookies: true,
   });
@@ -73,68 +130,6 @@ export async function updateUserStatus(
   return apiClient(`/api/v1/internal/admin/users/${encodeURIComponent(userId)}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
-    cache: "no-store",
-    withCookies: true,
-  });
-}
-
-// ─── Events ──────────────────────────────────────────────
-
-export async function getAdminEvents(params?: {
-  page?: number;
-  per_page?: number;
-}): Promise<PaginatedResponse<PublicEvent>> {
-  const searchParams = new URLSearchParams();
-  if (params?.page) searchParams.set("page", String(params.page));
-  if (params?.per_page) searchParams.set("per_page", String(params.per_page));
-
-  const query = searchParams.toString();
-  return apiClient(
-    `/api/v1/internal/admin/events${query ? `?${query}` : ""}`,
-    { cache: "no-store", withCookies: true, timeout: 15_000 }
-  );
-}
-
-export async function createEvent(data: {
-  title: string;
-  description_markdown: string;
-  start_time: string;
-  end_time?: string;
-  location?: string;
-  tags?: string[];
-  event_status?: string;
-}): Promise<PublicEvent> {
-  return apiClient("/api/v1/internal/admin/events", {
-    method: "POST",
-    body: JSON.stringify(data),
-    cache: "no-store",
-    withCookies: true,
-  });
-}
-
-export async function updateEvent(
-  id: string,
-  data: {
-    title?: string;
-    description_markdown?: string;
-    start_time?: string;
-    end_time?: string;
-    location?: string;
-    tags?: string[];
-    event_status?: string;
-  }
-): Promise<PublicEvent> {
-  return apiClient(`/api/v1/internal/admin/events/${encodeURIComponent(id)}`, {
-    method: "PUT",
-    body: JSON.stringify(data),
-    cache: "no-store",
-    withCookies: true,
-  });
-}
-
-export async function deleteEvent(id: string): Promise<void> {
-  return apiClient(`/api/v1/internal/admin/events/${encodeURIComponent(id)}`, {
-    method: "DELETE",
     cache: "no-store",
     withCookies: true,
   });

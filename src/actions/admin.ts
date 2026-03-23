@@ -3,24 +3,27 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { rethrowIfNextControlFlow } from "@/lib/next-control-flow";
 import {
+  createAdminRole,
   updateUserRole,
   updateUserStatus,
   updateGalleryImageStatus,
   deleteGalleryImage as deleteGalleryImageApi,
   uploadGalleryImage as uploadGalleryImageApi,
   uploadGalleryFiles as uploadGalleryFilesApi,
-  createEvent as createEventApi,
-  updateEvent as updateEventApi,
-  deleteEvent as deleteEventApi,
   createTag as createTagApi,
   updateTag as updateTagApi,
   deleteTag as deleteTagApi,
   createClub as createClubApi,
+  deleteAdminRole,
   updateClub as updateClubApi,
+  updateAdminRole,
+  updateAdminSystemRolePolicy,
   deleteClub as deleteClubApi,
   updateReportStatus,
 } from "@/lib/api/admin";
 import type {
+  AdminRolePayload,
+  AdminSystemRolePolicyPayload,
   UserRole,
   UserStatus,
   GalleryImageStatus,
@@ -49,6 +52,53 @@ export async function changeUserStatusAction(userId: string, status: UserStatus)
   } catch (err) {
     rethrowIfNextControlFlow(err);
     return { error: err instanceof Error ? err.message : "Failed to update user status" };
+  }
+}
+
+export async function createAdminRoleAction(payload: AdminRolePayload) {
+  try {
+    await createAdminRole(payload);
+    revalidatePath("/admin/roles");
+    return { success: true };
+  } catch (err) {
+    rethrowIfNextControlFlow(err);
+    return { error: err instanceof Error ? err.message : "Failed to create managed role" };
+  }
+}
+
+export async function updateAdminRoleAction(roleId: string, payload: AdminRolePayload) {
+  try {
+    await updateAdminRole(roleId, payload);
+    revalidatePath("/admin/roles");
+    return { success: true };
+  } catch (err) {
+    rethrowIfNextControlFlow(err);
+    return { error: err instanceof Error ? err.message : "Failed to update managed role" };
+  }
+}
+
+export async function deleteAdminRoleAction(roleId: string) {
+  try {
+    await deleteAdminRole(roleId);
+    revalidatePath("/admin/roles");
+    return { success: true };
+  } catch (err) {
+    rethrowIfNextControlFlow(err);
+    return { error: err instanceof Error ? err.message : "Failed to delete managed role" };
+  }
+}
+
+export async function updateAdminSystemRolePolicyAction(
+  role: UserRole,
+  payload: AdminSystemRolePolicyPayload
+) {
+  try {
+    await updateAdminSystemRolePolicy(role, payload);
+    revalidatePath("/admin/roles");
+    return { success: true };
+  } catch (err) {
+    rethrowIfNextControlFlow(err);
+    return { error: err instanceof Error ? err.message : "Failed to update system role policy" };
   }
 }
 
@@ -127,60 +177,6 @@ export async function uploadGalleryFilesAction(formData: FormData) {
   } catch (err) {
     rethrowIfNextControlFlow(err);
     return { error: err instanceof Error ? err.message : "Failed to upload image files" };
-  }
-}
-
-// ─── Events ──────────────────────────────────────────────
-
-export async function createEventAction(data: {
-  title: string;
-  description_markdown: string;
-  start_time: string;
-  end_time?: string;
-  location?: string;
-  tags?: string[];
-  event_status?: string;
-}) {
-  try {
-    await createEventApi(data);
-    revalidatePath("/admin/events");
-    return { success: true };
-  } catch (err) {
-    rethrowIfNextControlFlow(err);
-    return { error: err instanceof Error ? err.message : "Failed to create event" };
-  }
-}
-
-export async function updateEventAction(
-  id: string,
-  data: {
-    title?: string;
-    description_markdown?: string;
-    start_time?: string;
-    end_time?: string;
-    location?: string;
-    tags?: string[];
-    event_status?: string;
-  }
-) {
-  try {
-    await updateEventApi(id, data);
-    revalidatePath("/admin/events");
-    return { success: true };
-  } catch (err) {
-    rethrowIfNextControlFlow(err);
-    return { error: err instanceof Error ? err.message : "Failed to update event" };
-  }
-}
-
-export async function deleteEventAction(id: string) {
-  try {
-    await deleteEventApi(id);
-    revalidatePath("/admin/events");
-    return { success: true };
-  } catch (err) {
-    rethrowIfNextControlFlow(err);
-    return { error: err instanceof Error ? err.message : "Failed to delete event" };
   }
 }
 
