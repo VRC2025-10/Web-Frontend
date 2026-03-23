@@ -5,7 +5,6 @@ import { getTranslations } from "next-intl/server";
 import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -13,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, ExternalLink, UserCircle } from "lucide-react";
 import { ReportDialog } from "@/components/shared/report-dialog";
+import { RichTextContent } from "@/components/shared/rich-text-content";
 import type { Metadata } from "next";
 import { getLocaleMessages } from "@/i18n/messages";
 
@@ -88,10 +88,11 @@ export default async function MemberDetailPage(props: { params: Promise<{ id: st
           <Card className="rounded-[2rem] p-8">
             <CardContent className="p-0">
               <h2 className="text-xl font-bold">{t("detail.about")}</h2>
-              {member.bio_html ? (
-                <div
-                  className="markdown-content mt-4 max-w-none prose prose-neutral dark:prose-invert"
-                  dangerouslySetInnerHTML={{ __html: member.bio_html }}
+              {member.bio_markdown || member.bio_html ? (
+                <RichTextContent
+                  markdown={member.bio_markdown}
+                  html={member.bio_html}
+                  className="mt-4"
                 />
               ) : (
                 <p className="mt-4 text-muted-foreground">{t("detail.noBio")}</p>
