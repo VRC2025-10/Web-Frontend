@@ -4,6 +4,7 @@ interface PublicMemberProfileApi {
   nickname?: string | null;
   vrc_id?: string | null;
   x_id?: string | null;
+  bio_markdown?: string | null;
   bio_html?: string | null;
   avatar_url?: string | null;
   updated_at?: string;
@@ -88,7 +89,7 @@ export function normalizePublicMemberDetail(
     avatar_url: resolvePublicMemberAvatar(member),
     vrc_id: member.profile?.vrc_id ?? null,
     x_id: member.profile?.x_id ?? null,
-    bio_markdown: "",
+    bio_markdown: member.profile?.bio_markdown ?? "",
     bio_html: member.profile?.bio_html ?? "",
     updated_at: member.profile?.updated_at ?? member.joined_at ?? new Date(0).toISOString(),
   };
