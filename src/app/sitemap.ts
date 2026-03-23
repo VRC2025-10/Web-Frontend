@@ -17,12 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: `${BASE_URL}/events`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
       url: `${BASE_URL}/members`,
       lastModified: new Date(),
       changeFrequency: "weekly",
@@ -36,29 +30,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  let eventRoutes: MetadataRoute.Sitemap = [];
   let memberRoutes: MetadataRoute.Sitemap = [];
   let clubRoutes: MetadataRoute.Sitemap = [];
-
-  try {
-    const eventsRes = await fetch(
-      `${INTERNAL_API_BASE}/api/v1/public/events?status=published&per_page=100`,
-      { next: { revalidate: 3600 } }
-    );
-    if (eventsRes.ok) {
-      const eventsData = await eventsRes.json();
-      eventRoutes = (eventsData.items ?? []).map(
-        (event: { id: string; updated_at: string }) => ({
-          url: `${BASE_URL}/events/${event.id}`,
-          lastModified: safeLastModified(event.updated_at),
-          changeFrequency: "weekly" as const,
-          priority: 0.7,
-        })
-      );
-    }
-  } catch {
-    // Sitemap generation should not fail if the API is unavailable
-  }
 
   try {
     const membersRes = await fetch(
@@ -100,5 +73,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Continue without club routes
   }
 
-  return [...staticRoutes, ...eventRoutes, ...memberRoutes, ...clubRoutes];
+  return [...staticRoutes, ...memberRoutes, ...clubRoutes];
 }
