@@ -7,6 +7,7 @@
     "back": "戻る",
     "backToHome": "ホームに戻る",
     "save": "保存",
+    "edit": "編集",
     "cancel": "キャンセル",
     "delete": "削除",
     "confirm": "確認",
@@ -18,10 +19,11 @@
   },
   "nav": {
     "home": "ホーム",
-    "events": "イベント",
     "members": "メンバー",
     "clubs": "部活動",
+    "schedule": "スケジュール",
     "admin": "管理画面",
+    "language": "言語",
     "settings": "設定",
     "profile": "プロフィール",
     "login": "ログイン",
@@ -29,6 +31,7 @@
     "mobileMenu": "メニュー"
   },
   "theme": {
+    "label": "テーマ",
     "light": "ライトモード",
     "dark": "ダークモード",
     "system": "システム設定"
@@ -80,14 +83,9 @@
       "title": "VRC 10月同期会",
       "subtitle": "VRChatの10月同期メンバーが集うコミュニティ",
       "cta": {
-        "events": "イベントを見る",
+        "clubs": "部活を見る",
         "members": "メンバーを見る"
       }
-    },
-    "events": {
-      "title": "今後のイベント",
-      "viewAll": "すべて見る →",
-      "empty": "予定されているイベントはありません"
     },
     "members": {
       "title": "最近のメンバー",
@@ -209,6 +207,26 @@
   },
   "admin": {
     "title": "管理画面",
+    "roleNames": {
+      "member": "メンバー",
+      "staff": "スタッフ",
+      "admin": "管理者",
+      "super_admin": "スーパー管理者"
+    },
+    "nav": {
+      "title": "管理画面",
+      "subtitle": "コントロールパネル",
+      "ariaLabel": "管理ナビゲーション",
+      "backToSite": "サイトに戻る",
+      "dashboard": "ダッシュボード",
+      "users": "ユーザー",
+      "roles": "ロール",
+      "galleries": "ギャラリー",
+      "events": "イベント",
+      "tags": "タグ",
+      "reports": "レポート",
+      "clubs": "部活"
+    },
     "dashboard": {
       "title": "ダッシュボード",
       "totalUsers": "総メンバー数",
@@ -225,12 +243,12 @@
       "pulsePrimaryAlert": "未対応レポートが {count} 件あります。対応状況を先に確認してください。",
       "pulsePrimaryCalm": "未対応レポートはありません。他の管理作業を進められます。",
       "pulseSecondaryLabel": "イベント",
-      "pulseSecondaryText": "イベントは合計 {count} 件です。日程や公開状態の確認が必要ならイベント管理を開いてください。",
+      "pulseSecondaryText": "イベントは合計 {count} 件です。日程や公開状態の確認はイベント管理から行えます。",
       "pulseTertiaryLabel": "部活",
       "pulseTertiaryText": "部活は合計 {count} 件です。紹介内容や写真の更新は部活管理とギャラリーから行えます。",
       "hints": {
         "totalUsers": "登録済みメンバー数",
-        "totalEvents": "管理対象のイベント数",
+        "totalEvents": "管理中のイベント数",
         "totalClubs": "公開中の部活数",
         "pendingReportsActive": "優先確認が必要です",
         "pendingReportsClear": "緊急対応はありません"
@@ -242,18 +260,103 @@
         "membersDescription": "ロール変更、状態確認、プロフィール確認を行います。",
         "eventsTitle": "イベント管理",
         "eventsDescription": "日程、説明、公開状態を更新します。",
+        "scheduleTitle": "スケジュール",
+        "scheduleDescription": "内部スケジュールを開いて、運営予定や限定予定、通知ルールを調整します。",
+        "scheduleStat": "内部導線",
         "galleryTitle": "ギャラリー管理",
         "galleryDescription": "全体写真と部活写真を整理します。",
         "reportsTitle": "レポート管理",
-        "reportsDescription": "未対応レポートの確認と対応を行います。"
+        "reportsDescription": "未対応レポートの確認と対応を行います。",
+        "rolesTitle": "ロールポリシー",
+        "rolesDescription": "固定ロール権限と Discord 連動ロールを調整します。",
+        "rolesStatActive": "利用可能",
+        "rolesStatLocked": "ロック中"
       },
       "moodboardTitle": "確認メモ",
       "moodboardFirstLabel": "メンバー",
       "moodboardFirstText": "登録メンバーは {count} 人です。公開ページへの影響が大きい変更では、この件数を前提に確認してください。",
-      "moodboardSecondLabel": "イベントと写真",
-      "moodboardSecondText": "更新前に日付、公開状態、写真の対象範囲を確認してください。",
+      "moodboardSecondLabel": "写真",
+      "moodboardSecondText": "更新前に写真の対象範囲を確認してください。",
       "moodboardThirdLabel": "レポート",
       "moodboardThirdText": "未対応レポートは {count} 件です。残っている場合は最優先で確認してください。"
+    },
+    "roles": {
+      "page": {
+        "title": "ロールポリシー",
+        "description": "固定ロールの権限と、Discord ロール ID に紐づくダッシュボード用ロールを管理します。"
+      },
+      "roleNames": {
+        "member": "メンバー",
+        "staff": "スタッフ",
+        "admin": "管理者"
+      },
+      "roleDescriptions": {
+        "member": "標準ユーザーです。必要に応じてダッシュボード権限を部分付与できます。",
+        "staff": "日常運用向けの既定ロールです。確認系権限を中心に調整できます。",
+        "admin": "上位運用ロールです。スーパー管理者以外の管理権限を柔軟に調整できます。"
+      },
+      "system": {
+        "eyebrow": "固定ロール",
+        "title": "既存ロール権限",
+        "description": "member / staff / admin の既定権限を編集できます。super-admin は常に全権限固定です。",
+        "editingLabel": "編集中:",
+        "cancel": "編集をやめる"
+      },
+      "managed": {
+        "eyebrow": "Discord 連動ロール",
+        "title": "管理対象ロール",
+        "description": "Discord ロール ID をダッシュボード権限にマッピングします。super-admin はこのテーブルの対象外です。",
+        "empty": "まだ管理対象ロールはありません。ダッシュボードを解放したい Discord ロールを追加してください。",
+        "placeholders": {
+          "displayName": "表示名",
+          "discordRoleId": "Discord ロール ID",
+          "description": "このロールを誰に付与するか、何をさせるかを説明します。"
+        }
+      },
+      "permissions": {
+        "can_view_dashboard": {
+          "label": "ダッシュボード閲覧",
+          "hint": "概要画面と統計の表示を許可します。"
+        },
+        "can_manage_users": {
+          "label": "ユーザー管理",
+          "hint": "ユーザー状態の変更や一覧確認を許可します。"
+        },
+        "can_manage_roles": {
+          "label": "ロール管理",
+          "hint": "ロールポリシー編集と super-admin 以外のアプリロール変更を許可します。"
+        },
+        "can_manage_events": {
+          "label": "イベント管理",
+          "hint": "イベント作成・更新・公開操作を許可します。"
+        },
+        "can_manage_tags": {
+          "label": "タグ管理",
+          "hint": "タグの作成と更新を許可します。"
+        },
+        "can_manage_reports": {
+          "label": "レポート管理",
+          "hint": "通報対応と状態変更を許可します。"
+        },
+        "can_manage_galleries": {
+          "label": "ギャラリー管理",
+          "hint": "画像の審査、更新、削除を許可します。"
+        },
+        "can_manage_clubs": {
+          "label": "部活管理",
+          "hint": "部活情報の作成と編集を許可します。"
+        }
+      },
+      "actions": {
+        "createNew": "新規作成",
+        "editSystem": "固定ロールを編集",
+        "saveSystem": "固定ロール権限を保存",
+        "saveManaged": "ロールを保存",
+        "addManaged": "ロールを追加",
+        "editManaged": "編集",
+        "deleteManaged": "削除",
+        "saving": "保存中..."
+      }
     },
     "users": {
       "title": "ユーザー管理",
@@ -287,11 +390,11 @@
     },
     "events": {
       "title": "イベント管理",
-      "create": "イベント作成",
+      "create": "イベントを作成",
       "columns": {
         "title": "タイトル",
         "date": "日時",
-        "status": "ステータス",
+        "status": "状態",
         "tags": "タグ",
         "actions": "操作"
       },
@@ -300,10 +403,10 @@
         "delete": "削除"
       },
       "dialog": {
-        "createTitle": "イベント作成",
-        "editTitle": "イベント編集",
-        "deleteTitle": "イベント削除",
-        "deleteDesc": "よろしいですか？この操作は取り消せません。"
+        "createTitle": "イベントを作成",
+        "editTitle": "イベントを編集",
+        "deleteTitle": "イベントを削除",
+        "deleteDesc": "この操作は取り消せません。本当に削除しますか。"
       },
       "form": {
         "title": "タイトル",
@@ -311,12 +414,12 @@
         "startTime": "開始日時",
         "endTime": "終了日時",
         "location": "場所",
-        "status": "ステータス"
+        "status": "状態"
       },
-      "empty": "まだイベントがありません",
-      "created": "イベントが作成されました",
-      "updated": "イベントが更新されました",
-      "deleted": "イベントが削除されました"
+      "empty": "まだイベントが作成されていません",
+      "created": "イベントを作成しました",
+      "updated": "イベントを更新しました",
+      "deleted": "イベントを削除しました"
     },
     "galleries": {
       "title": "ギャラリー管理",
@@ -472,6 +575,209 @@
       "deleted": "部活動が削除されました"
     },
     "backToSite": "サイトに戻る"
+  },
+  "schedule": {
+    "meta": {
+      "title": "スケジュール",
+      "description": "運営向けの内部スケジュール管理画面"
+    },
+    "hero": {
+      "eyebrow": "内部スケジュール",
+      "description": "公開予定と限定予定をまとめて管理し、テンプレートと通知ルールも同じ画面で調整できます。",
+      "signedInAs": "ログイン中: {name}",
+      "role": "ロール: {role}",
+      "manageEvents": "予定を管理できます",
+      "restrictedAccess": "限定予定を閲覧できます",
+      "previousMonth": "前の月",
+      "nextMonth": "次の月",
+      "currentMonth": "今月へ戻る",
+      "newEntry": "予定を追加"
+    },
+    "stats": {
+      "managedRoles": "管理ロール",
+      "templates": "テンプレート",
+      "rules": "通知ルール"
+    },
+    "tabs": {
+      "timeline": "タイムライン",
+      "roles": "ロール",
+      "templates": "テンプレート",
+      "notifications": "通知"
+    },
+    "toast": {
+      "eventCreated": "予定を追加しました",
+      "eventUpdated": "予定を更新しました",
+      "eventDeleted": "予定を削除しました",
+      "roleCreated": "ロール設定を追加しました",
+      "roleUpdated": "ロール設定を更新しました",
+      "roleDeleted": "ロール設定を削除しました",
+      "templateCreated": "テンプレートを追加しました",
+      "templateUpdated": "テンプレートを更新しました",
+      "templateDeleted": "テンプレートを削除しました",
+      "webhookSaved": "Webhook を保存しました",
+      "webhookDeleted": "Webhook を削除しました",
+      "ruleCreated": "通知ルールを追加しました",
+      "ruleUpdated": "通知ルールを更新しました",
+      "ruleDeleted": "通知ルールを削除しました"
+    },
+    "timeline": {
+      "eyebrow": "共有タイムライン",
+      "title": "クリックかドラッグで枠を作成",
+      "description": "空き枠をクリックすると 30 分枠を作成できます。ドラッグすると開始から終了までまとめて選択できます。",
+      "legendClick": "クリックで 30 分追加",
+      "legendDrag": "ドラッグで時間帯指定",
+      "legendMasked": "限定予定は埋まり枠だけ表示",
+      "date": "日付",
+      "today": "今日",
+      "editable": "編集可",
+      "masked": "非公開",
+      "ariaOpenEvent": "予定を開く"
+    },
+    "editor": {
+      "eyebrow": "予定編集",
+      "createTitle": "予定を追加",
+      "editTitle": "予定を編集",
+      "close": "閉じる",
+      "rangeHint": "タイムラインで作った時間帯をベースに、ここで内容を微調整できます。",
+      "template": "テンプレート",
+      "noTemplate": "テンプレートを使わない",
+      "defaultTemplate": "既定: {name}",
+      "title": "タイトル",
+      "description": "詳細",
+      "startDate": "開始日",
+      "endDate": "終了日",
+      "startTime": "開始時刻",
+      "endTime": "終了時刻",
+      "titlePlaceholder": "収録、打ち合わせ、コラボ配信、引き継ぎ",
+      "descriptionPlaceholder": "共有しておきたい内容や、通知に含めたいメモを入力します。",
+      "visibility": {
+        "public": "公開",
+        "restricted": "限定公開",
+        "help": "限定公開にすると、選択した Discord ロールのメンバーだけが内容を見られます。"
+      },
+      "restrictedRoles": "閲覧できる Discord ロール",
+      "autoNotifyTitle": "自動通知を有効にする",
+      "autoNotifyDescription": "オンにした予定だけが Discord Webhook の定期通知対象になります。",
+      "delete": "予定を削除",
+      "create": "予定を追加",
+      "save": "変更を保存",
+      "saving": "保存中…",
+      "confirmTemplate": "入力中のタイトルと詳細を、選択したテンプレートで上書きしますか？",
+      "confirmDelete": "この予定を削除しますか？",
+      "errors": {
+        "restrictedRoles": "限定公開にする場合は、閲覧できるロールを 1 つ以上選択してください。",
+        "timeOrder": "終了時刻は開始時刻より後にしてください。",
+        "save": "予定の保存に失敗しました。",
+        "delete": "予定の削除に失敗しました。"
+      }
+    },
+    "roles": {
+      "eyebrow": "ロール設定",
+      "title": "Discord ロール権限",
+      "description": "限定予定の閲覧権限や、テンプレート・通知の管理権限を Discord ロール単位で設定します。",
+      "createNew": "新規作成に戻る",
+      "placeholders": {
+        "displayName": "表示名",
+        "discordRoleId": "Discord ロール ID",
+        "description": "このロールが何を操作できるかを説明します。"
+      },
+      "permissions": {
+        "restricted": "限定予定の詳細を閲覧",
+        "events": "予定を管理",
+        "templates": "テンプレートを管理",
+        "notifications": "通知を管理",
+        "roles": "ロール設定を管理"
+      },
+      "actions": {
+        "add": "ロールを追加",
+        "save": "ロールを保存",
+        "saving": "保存中…"
+      },
+      "badges": {
+        "restricted": "限定予定閲覧",
+        "events": "予定",
+        "templates": "テンプレート",
+        "notifications": "通知",
+        "roles": "ロール"
+      },
+      "confirmDelete": "このロール設定を削除しますか？",
+      "empty": "まだロール設定はありません。運営で使う Discord ロールを追加してください。",
+      "errors": {
+        "save": "ロール設定の保存に失敗しました。",
+        "delete": "ロール設定の削除に失敗しました。"
+      }
+    },
+    "templates": {
+      "eyebrow": "テンプレート",
+      "title": "定型文テンプレート",
+      "description": "よく使うタイトルや詳細文をまとめて登録して、予定作成時にすぐ呼び出せます。",
+      "createNew": "新規作成に戻る",
+      "placeholders": {
+        "name": "テンプレート名",
+        "title": "適用するタイトル",
+        "description": "適用する詳細文"
+      },
+      "defaultLabel": "既定テンプレートにする",
+      "defaultBadge": "既定",
+      "titleLabel": "タイトル",
+      "actions": {
+        "add": "テンプレートを追加",
+        "save": "テンプレートを保存",
+        "saving": "保存中…"
+      },
+      "confirmDelete": "このテンプレートを削除しますか？",
+      "empty": "まだテンプレートはありません。よく使う定型文を登録してください。",
+      "errors": {
+        "save": "テンプレートの保存に失敗しました。",
+        "delete": "テンプレートの削除に失敗しました。"
+      }
+    },
+    "notifications": {
+      "eyebrow": "通知",
+      "title": "Discord 通知ルール",
+      "description": "1 つの Webhook に対して、開始前通知や日次通知のルールを複数設定できます。",
+      "createNew": "新規ルールに戻る",
+      "webhookTitle": "Webhook URL",
+      "webhookDescription": "自動通知を送る Discord Webhook を設定します。",
+      "show": "表示",
+      "hide": "非表示",
+      "saveWebhook": "Webhook を保存",
+      "deleteWebhook": "Webhook を削除",
+      "placeholdersTitle": "使えるプレースホルダー",
+      "placeholdersBefore": "開始前通知",
+      "placeholdersDailyBody": "日次通知本文",
+      "placeholdersDailyItem": "日次通知の各行",
+      "ruleName": "ルール名",
+      "scheduleType": "通知タイプ",
+      "scheduleTypes": {
+        "before_event": "開始前通知",
+        "daily_at": "日次サマリー"
+      },
+      "enabled": "このルールを有効にする",
+      "offsetMinutes": "開始何分前に送るか",
+      "timeOfDay": "送信時刻",
+      "windowStart": "集計開始分",
+      "windowEnd": "集計終了分",
+      "bodyTemplate": "本文テンプレート",
+      "listItemTemplate": "一覧行テンプレート",
+      "actions": {
+        "add": "ルールを追加",
+        "save": "ルールを保存",
+        "saving": "保存中…"
+      },
+      "paused": "停止中",
+      "beforeSummary": "開始 {minutes} 分前に送信",
+      "dailySummary": "毎日 {time} に、{start} 分から {end} 分までの予定を集計",
+      "confirmDeleteWebhook": "Webhook 設定を削除しますか？",
+      "confirmDeleteRule": "この通知ルールを削除しますか？",
+      "empty": "まだ通知ルールはありません。開始前通知や日次通知を追加してください。",
+      "errors": {
+        "saveWebhook": "Webhook の保存に失敗しました。",
+        "deleteWebhook": "Webhook の削除に失敗しました。",
+        "saveRule": "通知ルールの保存に失敗しました。",
+        "deleteRule": "通知ルールの削除に失敗しました。"
+      }
+    }
   },
   "errors": {
     "notFound": {
