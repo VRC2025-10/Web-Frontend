@@ -79,7 +79,7 @@ export async function generateMetadata(): Promise<Metadata> {
   │    │    ├── p (subtitle)
   │    │    │    className="text-lg text-muted-foreground mt-4 max-w-xl"
   │    │    └── CTAButtons (flex gap-4 mt-8, flex-col sm:flex-row)
-  │    │         ├── Button (Primary): "View Events" → /events
+  │    │         ├── Button (Primary): "Browse Clubs" → /clubs
   │    │         │    className="bg-primary text-primary-foreground rounded-2xl px-8 py-4 text-lg"
   │    │         └── Button (Outline): "Meet Members" → /members
   │    │              className="variant='outline' rounded-2xl px-8 py-4 text-lg"
@@ -212,7 +212,7 @@ h1: "VRChat October Cohort" (Hero内)
 home.meta.description        — "VRChat 10月同期会のコミュニティサイト"
 home.hero.title              — "VRChat October Cohort"
 home.hero.subtitle           — "VRChatの10月同期メンバーが集うコミュニティ"
-home.hero.cta.events         — "View Events"
+home.hero.cta.clubs          — "Browse Clubs"
 home.hero.cta.members        — "Meet Members"
 home.events.title            — "Upcoming Events"
 home.events.viewAll          — "View all →"
