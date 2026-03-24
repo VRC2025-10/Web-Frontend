@@ -20,9 +20,13 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { MarkdownPreview } from "./markdown-preview";
 import { ProfileFormSchema } from "@/lib/validations/profile";
 import { updateProfileAction } from "@/actions/profile";
-import { z } from "zod";
 
-type FormInput = z.input<typeof ProfileFormSchema>;
+type FormInput = {
+  vrc_id: string;
+  x_id: string;
+  bio_markdown: string;
+  is_public: boolean;
+};
 
 function ShakeOnError({
   hasError,
