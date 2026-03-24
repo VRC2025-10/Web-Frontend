@@ -13,21 +13,46 @@ interface FetchOptions extends Omit<RequestInit, "headers"> {
   };
 }
 
+function normalizeOrigin(value: string): string | null {
+  const trimmed = value.trim().replace(/\/$/, "");
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    const normalized = new URL(trimmed);
+    return normalized.origin;
+  } catch {
+    return null;
+  }
+}
+
+function firstForwardedValue(value: string | null): string | null {
+  if (!value) {
+    return null;
+  }
+
+  const first = value.split(",")[0]?.trim();
+  return first && first.length > 0 ? first : null;
+}
+
 function resolveFrontendOrigin(headerStore: Headers): string | null {
   const configuredOrigin =
     process.env.FRONTEND_ORIGIN?.trim() || process.env.NEXT_PUBLIC_SITE_URL?.trim();
 
   if (configuredOrigin) {
-    return configuredOrigin.replace(/\/$/, "");
+    return normalizeOrigin(configuredOrigin);
   }
 
-  const forwardedHost = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  const forwardedHost =
+    firstForwardedValue(headerStore.get("x-forwarded-host")) ??
+    firstForwardedValue(headerStore.get("host"));
   if (!forwardedHost) {
     return null;
   }
 
-  const forwardedProto = headerStore.get("x-forwarded-proto") ?? "http";
-  return `${forwardedProto}://${forwardedHost}`;
+  const forwardedProto = firstForwardedValue(headerStore.get("x-forwarded-proto")) ?? "http";
+  return normalizeOrigin(`${forwardedProto}://${forwardedHost}`);
 }
 
 function isUnsafeMethod(method: string | undefined): boolean {

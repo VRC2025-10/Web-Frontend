@@ -5,6 +5,7 @@ export const MARKDOWN_SANITIZE_SCHEMA = {
   tagNames: [
     ...(defaultSchema.tagNames ?? []),
     "img",
+    "input",
     "table",
     "thead",
     "tbody",
@@ -21,6 +22,7 @@ export const MARKDOWN_SANITIZE_SCHEMA = {
     ...(defaultSchema.attributes ?? {}),
     a: [...(defaultSchema.attributes?.a ?? []), "href", "title"],
     img: ["src", "alt", "title"],
+    input: ["type", "checked", "disabled"],
     th: ["align"],
     td: ["align"],
   },
@@ -28,5 +30,6 @@ export const MARKDOWN_SANITIZE_SCHEMA = {
     ...(defaultSchema.protocols ?? {}),
     href: ["https"],
     src: ["https"],
+    cite: ["https"],
   },
 };
