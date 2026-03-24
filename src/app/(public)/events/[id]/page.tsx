@@ -59,7 +59,7 @@ export default async function EventDetailPage(props: { params: Promise<{ id: str
           <div className="inline-flex items-center gap-2 mt-4">
             <Calendar className="w-4 h-4 text-muted-foreground" />
             <span className="bg-secondary/15 text-secondary-foreground rounded-lg px-3 py-1.5 text-sm">
-              {formatEventDateRange(event.start_time, event.end_time)}
+              {formatEventDateRange(event.start_time, event.end_time, locale)}
             </span>
           </div>
           {event.tags.length > 0 && (
