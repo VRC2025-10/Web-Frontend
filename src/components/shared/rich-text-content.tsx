@@ -37,7 +37,17 @@ export function RichTextContent({
   return (
     <div
       className={cn(
-        "markdown-content prose prose-neutral dark:prose-invert max-w-none",
+        [
+          "markdown-content max-w-none prose prose-neutral dark:prose-invert",
+          "prose-headings:font-heading prose-headings:text-card-foreground",
+          "prose-p:text-card-foreground/95 prose-li:text-card-foreground/95",
+          "prose-strong:text-card-foreground prose-em:text-card-foreground/95",
+          "prose-code:text-card-foreground prose-pre:text-foreground prose-pre:bg-muted/95",
+          "prose-blockquote:text-card-foreground/92 prose-blockquote:border-primary/25",
+          "prose-a:text-accent hover:prose-a:text-accent/80",
+          "prose-th:text-card-foreground prose-td:text-card-foreground/88",
+          "prose-hr:border-border",
+        ].join(" "),
         className,
       )}
     >
