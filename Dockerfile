@@ -22,6 +22,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 RUN npm run build && \
+  mkdir -p .next/standalone/node_modules/@swc && \
+  rm -rf .next/standalone/node_modules/@swc/helpers && \
+  cp -R node_modules/@swc/helpers .next/standalone/node_modules/@swc/helpers && \
     mkdir -p .next/standalone/.next/static .next/standalone/public && \
     cp -R .next/static/. .next/standalone/.next/static/ && \
     cp -R public/. .next/standalone/public/
