@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
+import type { PluggableList } from "unified";
 
 import { MARKDOWN_SANITIZE_SCHEMA } from "@/lib/markdown-schema";
 import { cn } from "@/lib/utils";
@@ -15,10 +16,10 @@ interface RichTextContentProps {
   emptyFallback?: ReactNode;
 }
 
-const markdownRehypePlugins = [
+const markdownRehypePlugins: PluggableList = [
   rehypeRaw,
   [rehypeSanitize, MARKDOWN_SANITIZE_SCHEMA],
-] as const;
+];
 
 export function RichTextContent({
   markdown,

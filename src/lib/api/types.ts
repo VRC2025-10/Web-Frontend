@@ -241,7 +241,7 @@ export type ReportStatus = "pending" | "resolved" | "dismissed";
 export type GalleryImageStatus = "pending" | "approved" | "rejected";
 
 /** Report target entity type */
-export type ReportTargetType = "profile";
+export type ReportTargetType = "profile" | "event";
 
 /** User account status */
 export type UserStatus = "active" | "suspended";

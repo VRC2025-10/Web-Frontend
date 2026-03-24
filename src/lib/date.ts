@@ -71,6 +71,26 @@ export function formatDateTime(dateStr: string, locale: string = "ja"): string {
   return formatDateTimeLabel(getDate(dateStr), locale);
 }
 
+export function formatEventDateRange(
+  startTime: string,
+  endTime: string | null,
+  locale: string = "ja"
+): string {
+  const start = getDate(startTime);
+  const startStr = `${formatMonthDay(start, locale)} ${formatClock(start, locale)}`;
+
+  if (!endTime) {
+    return startStr;
+  }
+
+  const end = getDate(endTime);
+  if (getCalendarDayKey(start) === getCalendarDayKey(end)) {
+    return `${startStr} 〜 ${formatClock(end, locale)}`;
+  }
+
+  return `${startStr} 〜 ${formatMonthDay(end, locale)} ${formatClock(end, locale)}`;
+}
+
 export function formatTime(dateStr: string, locale: string = "ja"): string {
   return formatClock(getDate(dateStr), locale);
 }
@@ -80,4 +100,25 @@ export function formatRelativeTime(dateStr: string, locale: string = "ja"): stri
     addSuffix: true,
     locale: getLocale(locale),
   });
+}
+
+export function getEventStatus(
+  startTime: string,
+  endTime: string | null
+): "upcoming" | "ongoing" | "past" {
+  const now = new Date();
+  const start = parseISO(startTime);
+
+  if (now < start) {
+    return "upcoming";
+  }
+
+  if (endTime) {
+    const end = parseISO(endTime);
+    if (now <= end) {
+      return "ongoing";
+    }
+  }
+
+  return "past";
 }
