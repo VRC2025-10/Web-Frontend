@@ -2,6 +2,7 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireMe } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
 import { rethrowIfNextControlFlow } from "@/lib/next-control-flow";
 import { updateMyProfile } from "@/lib/api/profile";
 import { ProfileFormSchema } from "@/lib/validations/profile";
@@ -23,6 +24,18 @@ export async function updateProfileAction(formData: unknown) {
     return { success: true };
   } catch (err) {
     rethrowIfNextControlFlow(err);
+
+    if (err instanceof ApiError) {
+      console.error("updateProfileAction failed", {
+        status: err.status,
+        code: err.code,
+        message: err.message,
+      });
+      return {
+        error: err.message ? `${err.message} (${err.code})` : `Failed to update profile (${err.code})`,
+      };
+    }
+
     return { error: err instanceof Error ? err.message : "Failed to update profile" };
   }
 }

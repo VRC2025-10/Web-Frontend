@@ -38,6 +38,7 @@ export async function updateMyProfile(data: ProfileFormValues): Promise<MyProfil
     method: "PUT",
     body: JSON.stringify(data),
     cache: "no-store",
+    errorMode: "throw",
     withCookies: true,
   });
 

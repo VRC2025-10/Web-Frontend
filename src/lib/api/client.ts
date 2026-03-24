@@ -6,6 +6,7 @@ const INTERNAL_API_BASE = process.env.INTERNAL_API_URL || "http://backend:8080";
 interface FetchOptions extends Omit<RequestInit, "headers"> {
   withCookies?: boolean;
   timeout?: number;
+  errorMode?: "navigate" | "throw";
   next?: {
     revalidate?: number;
     tags?: string[];
@@ -38,7 +39,13 @@ export async function apiClient<T>(
   path: string,
   options: FetchOptions = {}
 ): Promise<T> {
-  const { withCookies = false, timeout = 10_000, next, ...fetchOptions } = options;
+  const {
+    withCookies = false,
+    timeout = 10_000,
+    errorMode = "navigate",
+    next,
+    ...fetchOptions
+  } = options;
 
   const url = `${INTERNAL_API_BASE}${path}`;
   const isFormDataBody = fetchOptions.body instanceof FormData;
@@ -141,9 +148,12 @@ export async function apiClient<T>(
     });
 
     if (!res.ok) {
-      await handleErrorStatus(res.status, res.headers.get("retry-after"));
-
       const errorBody = await res.json().catch(() => ({}));
+
+      if (errorMode === "navigate") {
+        await handleErrorStatus(res.status, res.headers.get("retry-after"));
+      }
+
       throw new ApiError(
         res.status,
         errorBody.error || errorBody.code || "UNKNOWN",
