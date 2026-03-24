@@ -91,6 +91,11 @@ export function ProfileForm({ defaultValues, username }: ProfileFormProps) {
     },
   });
 
+  useEffect(() => {
+    register("bio_markdown");
+    register("is_public");
+  }, [register]);
+
   const bioValue = watch("bio_markdown", defaultValues.bio_markdown);
   const vrcIdValue = watch("vrc_id", defaultValues.vrc_id ?? "");
   const xIdValue = watch("x_id", defaultValues.x_id ?? "");
@@ -237,7 +242,13 @@ export function ProfileForm({ defaultValues, username }: ProfileFormProps) {
               <MarkdownPreview
                 id="bio_markdown"
                 value={bioValue}
-                onChange={(val) => setValue("bio_markdown", val, { shouldValidate: true })}
+                onChange={(val) =>
+                  setValue("bio_markdown", val, {
+                    shouldDirty: true,
+                    shouldTouch: true,
+                    shouldValidate: true,
+                  })
+                }
                 rows={8}
                 placeholder="Write something about yourself… (Markdown supported)"
                 aria-invalid={!!errors.bio_markdown}
@@ -278,7 +289,11 @@ export function ProfileForm({ defaultValues, username }: ProfileFormProps) {
               id="is_public"
               checked={isPublic}
               onCheckedChange={(checked: boolean) =>
-                setValue("is_public", checked)
+                setValue("is_public", checked, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                  shouldValidate: true,
+                })
               }
               aria-describedby="is_public-desc"
             />

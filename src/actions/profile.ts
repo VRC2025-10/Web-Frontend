@@ -10,7 +10,17 @@ import { ProfileFormSchema } from "@/lib/validations/profile";
 export async function updateProfileAction(formData: unknown) {
   const parsed = ProfileFormSchema.safeParse(formData);
   if (!parsed.success) {
-    return { error: "Validation failed", details: parsed.error.flatten() };
+    const details = parsed.error.flatten();
+    const fieldMessage = Object.entries(details.fieldErrors)
+      .flatMap(([field, messages]) =>
+        (messages ?? []).map((message) => `${field}: ${message}`)
+      )
+      .join("; ");
+
+    return {
+      error: fieldMessage || "Validation failed",
+      details,
+    };
   }
 
   try {
