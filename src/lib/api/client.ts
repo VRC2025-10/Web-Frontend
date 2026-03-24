@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { isDevelopmentMockEnabled, resolveDevelopmentMock, type MockApiErrorLike } from "./dev-mock";
 
 const INTERNAL_API_BASE = process.env.INTERNAL_API_URL || "http://backend:8080";
@@ -12,6 +12,28 @@ interface FetchOptions extends Omit<RequestInit, "headers"> {
   };
 }
 
+function resolveFrontendOrigin(headerStore: Headers): string | null {
+  const configuredOrigin =
+    process.env.FRONTEND_ORIGIN?.trim() || process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+  if (configuredOrigin) {
+    return configuredOrigin.replace(/\/$/, "");
+  }
+
+  const forwardedHost = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  if (!forwardedHost) {
+    return null;
+  }
+
+  const forwardedProto = headerStore.get("x-forwarded-proto") ?? "http";
+  return `${forwardedProto}://${forwardedHost}`;
+}
+
+function isUnsafeMethod(method: string | undefined): boolean {
+  const normalizedMethod = (method ?? "GET").toUpperCase();
+  return !["GET", "HEAD", "OPTIONS"].includes(normalizedMethod);
+}
+
 export async function apiClient<T>(
   path: string,
   options: FetchOptions = {}
@@ -21,15 +43,25 @@ export async function apiClient<T>(
   const url = `${INTERNAL_API_BASE}${path}`;
   const isFormDataBody = fetchOptions.body instanceof FormData;
 
-  const headers: Record<string, string> = {};
+  const requestHeaders: Record<string, string> = {};
 
   if (!isFormDataBody && fetchOptions.body !== undefined) {
-    headers["Content-Type"] = "application/json";
+    requestHeaders["Content-Type"] = "application/json";
   }
 
   if (withCookies) {
     const cookieStore = await cookies();
-    headers["Cookie"] = cookieStore.toString();
+    requestHeaders["Cookie"] = cookieStore.toString();
+  }
+
+  if (isUnsafeMethod(fetchOptions.method)) {
+    const headerStore = await headers();
+    const frontendOrigin = resolveFrontendOrigin(headerStore);
+
+    if (frontendOrigin) {
+      requestHeaders["Origin"] = frontendOrigin;
+      requestHeaders["Referer"] = `${frontendOrigin}/`;
+    }
   }
 
   const controller = new AbortController();
@@ -85,7 +117,7 @@ export async function apiClient<T>(
       try {
         return await resolveDevelopmentMock<T>(path, {
           ...fetchOptions,
-          headers,
+          headers: requestHeaders,
         });
       } catch (error) {
         if (isMockError(error)) {
@@ -99,7 +131,7 @@ export async function apiClient<T>(
 
     const res = await fetch(url, {
       ...fetchOptions,
-      headers,
+      headers: requestHeaders,
       signal: controller.signal,
       ...(next ? { next } : {}),
     }).catch(async () => {
