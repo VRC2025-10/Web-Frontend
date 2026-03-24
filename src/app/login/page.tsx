@@ -1,12 +1,12 @@
-import Link from "next/link";
 import { LoginButton } from "@/components/features/auth/login-button";
-import { PostLoginRedirect } from "@/components/features/auth/post-login-redirect";
 import { LeafParticles } from "@/components/shared/leaf-particles";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { SITE_NAME } from "@/lib/site";
+import { getMe } from "@/lib/api/auth";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: `Login | ${SITE_NAME}`,
@@ -15,10 +15,22 @@ export const metadata: Metadata = {
 
 const errorKeys = ["auth_failed", "csrf_failed", "not_guild_member", "discord_error", "suspended"] as const;
 
-export default async function LoginPage(props: { searchParams: Promise<{ error?: string }> }) {
+export default async function LoginPage(props: {
+  searchParams: Promise<{ error?: string; redirect_to?: string }>;
+}) {
   const searchParams = await props.searchParams;
   const t = await getTranslations("auth");
   const tLogin = await getTranslations("auth.login");
+  const user = await getMe();
+
+  const redirectTo =
+    typeof searchParams.redirect_to === "string" && searchParams.redirect_to.startsWith("/")
+      ? searchParams.redirect_to
+      : undefined;
+
+  if (user) {
+    redirect(redirectTo ?? "/");
+  }
 
   const errorKey = searchParams.error;
   const errorMessage =
@@ -28,7 +40,6 @@ export default async function LoginPage(props: { searchParams: Promise<{ error?:
 
   return (
     <>
-      <PostLoginRedirect />
       <div className="min-h-screen flex flex-col md:flex-row">
         {/* Left illustration panel (hidden on mobile) */}
         <div role="presentation" className="hidden md:flex md:w-1/2 flex-col items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/10 p-12 relative overflow-hidden">
@@ -54,7 +65,7 @@ export default async function LoginPage(props: { searchParams: Promise<{ error?:
               )}
 
               <div className="mt-8">
-                <LoginButton label={tLogin("button")} />
+                <LoginButton redirectTo={redirectTo} label={tLogin("button")} />
               </div>
               <p className="text-sm text-muted-foreground mt-6 text-center">{tLogin("footnote")}</p>
             </CardContent>

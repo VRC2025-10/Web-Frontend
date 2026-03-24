@@ -18,10 +18,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname === "/login" && sessionId) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
   if (pathname.startsWith("/settings") && !sessionId) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect_to", pathname);
